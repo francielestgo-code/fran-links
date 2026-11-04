@@ -56,25 +56,34 @@
             transform: scale(1.05);
         }
 
-        /* Botão Sobre Mim */
-        .about-btn {
+        /* Grupo de Botões do Topo (Sobre Mim e Contato) */
+        .top-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        /* Botão Sobre Mim & Contato */
+        .about-btn, .contact-btn {
             background: rgba(56, 189, 248, 0.15);
             border: 1px solid #38bdf8;
             color: #38bdf8;
             font-size: 0.85rem;
             font-weight: 600;
-            padding: 8px 20px;
+            padding: 8px 18px;
             border-radius: 20px;
             cursor: pointer;
-            margin-bottom: 14px;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 10px rgba(56, 189, 248, 0.15);
+            text-decoration: none;
         }
 
-        .about-btn:hover {
+        .about-btn:hover, .contact-btn:hover {
             background: #38bdf8;
             color: #0f172a;
             transform: translateY(-2px);
@@ -180,7 +189,11 @@
         }
 
         .card-btn.natura {
-            background: #ec4899; /* Cor temática para beleza/cosméticos */
+            background: #ec4899;
+        }
+
+        .card-btn.youtube {
+            background: #ef4444;
         }
 
         .card-btn:hover {
@@ -285,10 +298,15 @@
             <img src="avatar-fran.png" alt="Avatar Fran Freitas" class="profile-img" onclick="openModal(this.src)">
         </div>
 
-        <!-- Botão Sobre Mim -->
-        <button class="about-btn" onclick="openAboutModal()">
-            <i class="fa-solid fa-user-pen"></i> Sobre mim
-        </button>
+        <!-- Botões do Topo: Sobre Mim & Contato via Gmail -->
+        <div class="top-buttons">
+            <button class="about-btn" onclick="openAboutModal()">
+                <i class="fa-solid fa-user-pen"></i> Sobre mim
+            </button>
+            <a href="mailto:suportefranfreitas@gmail.com" class="contact-btn">
+                <i class="fa-solid fa-envelope"></i> Contato (Gmail)
+            </a>
+        </div>
         
         <h1>Fran Freitas</h1>
         <p class="bio">Tecnologia, Autonomia Digital, Finanças & Cuidados Pessoais 🌸💻</p>
@@ -334,7 +352,7 @@
 
         <!-- Livro 2 -->
         <div class="card-container">
-            <img src="sfdfddgdg.png" alt="Capa Livro Quem é o fibromiálgico na Fila do pão?" class="card-thumb" onclick="openModal(this.src)">
+            <img src="sfdfddgdg_2.jpg" alt="Capa Livro Quem é o fibromiálgico na Fila do pão?" class="card-thumb" onclick="openModal(this.src)">
             <div class="card-info">
                 <h3>Quem é o fibromiálgico na Fila do pão?</h3>
                 <p>Um guia real sobre dores invisíveis, diagnósticos tardios e superação.</p>
@@ -400,7 +418,7 @@
         <div class="section-title">Conteúdo & Contato</div>
         
         <div class="card-container">
-            <img src="Gemini.png" alt="Canal no YouTube Prof.ª Fran Freitas" class="card-thumb" onclick="openModal(this.src)">
+            <img src="avatar-fran.png" alt="Canal no YouTube Prof.ª Fran Freitas" class="card-thumb" onclick="openModal(this.src)">
             <div class="card-info">
                 <h3>Canal no YouTube</h3>
                 <p>Prof.ª Fran Freitas — Tutoriais de TI e dicas práticas.</p>
