@@ -107,7 +107,7 @@
             border-left: 3px solid #38bdf8;
         }
 
-        /* Botões de Links */
+        /* Botões de Links Simples */
         .link-card {
             display: flex;
             align-items: center;
@@ -222,6 +222,10 @@
 
         .card-btn.hotmart {
             background: #ff5722;
+        }
+
+        .card-btn.youtube {
+            background: #ef4444; /* Cor temática do YouTube */
         }
 
         .card-btn:hover {
@@ -419,13 +423,20 @@
 
         <!-- Seção: Redes e Conteúdo -->
         <div class="section-title">Conteúdo & Contato</div>
-        <a href="https://youtube.com" target="_blank" class="link-card">
-            <i class="fa-brands fa-youtube"></i>
-            <div class="link-content">
-                <div class="link-title">Canal no YouTube</div>
-                <div class="link-desc">Prof.ª Fran Freitas — Tutoriais de TI</div>
+        
+        <!-- Canal no YouTube com Imagem, Zoom e Botão -->
+        <div class="card-container">
+            <img src="avatar-fran.png" alt="Canal no YouTube Prof.ª Fran Freitas" class="card-thumb" onclick="openModal(this.src)">
+            <div class="card-info">
+                <h3>Canal no YouTube</h3>
+                <p>Prof.ª Fran Freitas — Tutoriais de TI e dicas práticas.</p>
+                <div class="card-buttons">
+                    <a href="https://youtube.com" target="_blank" class="card-btn youtube">
+                        <i class="fa-brands fa-youtube"></i> Acessar Canal
+                    </a>
+                </div>
             </div>
-        </a>
+        </div>
 
         <footer>
             &copy; 2026 Fran BeautyCare & Tech. Todos os direitos reservados.
@@ -452,7 +463,7 @@
                 <li><strong>Painel Financeiro:</strong> Uma ferramenta prática em formato de site desenvolvida especialmente para o usuário comum que deseja assumir o controle das próprias finanças de forma simples, visual e eficiente.</li>
                 <li><strong>Beleza & Cuidado (Natura & Avon):</strong> Como sempre fui apaixonada pelo universo dos cosméticos e do autocuidado, trouxe para cá o link oficial da minha loja virtual como consultora, reunindo os melhores produtos para você se cuidar todos os dias.</li>
             </ul>
-            <p>Cada detalhe deste projeto reflete a minha missão de simplificar a vida, acolher histórias e conectar pessoas, seja através da tela do YouTube, da literatura, da organização financeira ou do autocuidado.</p>
+            <p>Cada detalhe deste projeto reflete a missão de simplificar a vida, acolher histórias e conectar pessoas, seja através da tela do YouTube, da literatura, da organização financeira ou do autocuidado.</p>
             <p>Fique à vontade para explorar, conhecer meus trabalhos e encontrar exatamente o que você precisa. É um prazer fazer parte da sua rotina!</p>
         </div>
     </div>
