@@ -107,51 +107,6 @@
             border-left: 3px solid #38bdf8;
         }
 
-        /* Botões de Links Simples */
-        .link-card {
-            display: flex;
-            align-items: center;
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 14px 18px;
-            margin-bottom: 12px;
-            text-decoration: none;
-            color: #f8fafc;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .link-card:hover {
-            transform: translateY(-2px);
-            background: rgba(56, 189, 248, 0.15);
-            border-color: #38bdf8;
-            box-shadow: 0 6px 15px rgba(56, 189, 248, 0.2);
-        }
-
-        .link-card i {
-            font-size: 1.25rem;
-            margin-right: 14px;
-            color: #38bdf8;
-            width: 24px;
-            text-align: center;
-        }
-
-        .link-content {
-            text-align: left;
-            flex-grow: 1;
-        }
-
-        .link-title {
-            font-size: 0.95rem;
-            font-weight: 600;
-        }
-
-        .link-desc {
-            font-size: 0.75rem;
-            color: #94a3b8;
-        }
-
         /* Destaque especial para os cards com imagem */
         .card-container {
             background: rgba(30, 41, 59, 0.85);
@@ -224,8 +179,8 @@
             background: #ff5722;
         }
 
-        .card-btn.youtube {
-            background: #ef4444;
+        .card-btn.natura {
+            background: #ec4899; /* Cor temática para beleza/cosméticos */
         }
 
         .card-btn:hover {
@@ -340,13 +295,19 @@
 
         <!-- Seção: Beleza & Consultoria -->
         <div class="section-title">Beleza & Consultoria</div>
-        <a href="https://www.minhaloja.natura.com/consultoria/francielef1009" target="_blank" class="link-card">
-            <i class="fa-solid fa-store"></i>
-            <div class="link-content">
-                <div class="link-title">Espaço Digital Natura & Avon</div>
-                <div class="link-desc">Compre com segurança direto da minha lojinha</div>
+        
+        <div class="card-container">
+            <img src="Gemini_Generated_Image_wznepgwznepgwzne.jpg" alt="Espaço Digital Natura & Avon" class="card-thumb" onclick="openModal(this.src)">
+            <div class="card-info">
+                <h3>Espaço Digital Natura & Avon</h3>
+                <p>Compre com segurança direto da minha lojinha oficial.</p>
+                <div class="card-buttons">
+                    <a href="https://www.minhaloja.natura.com/consultoria/francielef1009" target="_blank" class="card-btn natura">
+                        <i class="fa-solid fa-store"></i> Acessar Lojinha
+                    </a>
+                </div>
             </div>
-        </a>
+        </div>
 
         <!-- Seção: Livros & Apostilas -->
         <div class="section-title">Livros & Apostilas</div>
@@ -373,7 +334,7 @@
 
         <!-- Livro 2 -->
         <div class="card-container">
-            <img src="sfdfddgdg.png" alt="Capa Livro Quem é o fibromiálgico na Fila do pão?" class="card-thumb" onclick="openModal(this.src)">
+            <img src="sfdfddgdg_2.jpg" alt="Capa Livro Quem é o fibromiálgico na Fila do pão?" class="card-thumb" onclick="openModal(this.src)">
             <div class="card-info">
                 <h3>Quem é o fibromiálgico na Fila do pão?</h3>
                 <p>Um guia real sobre dores invisíveis, diagnósticos tardios e superação.</p>
@@ -439,7 +400,7 @@
         <div class="section-title">Conteúdo & Contato</div>
         
         <div class="card-container">
-            <img src="Gemini.png" alt="Canal no YouTube Prof.ª Fran Freitas" class="card-thumb" onclick="openModal(this.src)">
+            <img src="avatar-fran.png" alt="Canal no YouTube Prof.ª Fran Freitas" class="card-thumb" onclick="openModal(this.src)">
             <div class="card-info">
                 <h3>Canal no YouTube</h3>
                 <p>Prof.ª Fran Freitas — Tutoriais de TI e dicas práticas.</p>
