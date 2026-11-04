@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fran BeautyCare & Tech | Central de Links</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400,500,600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+        }
+
+        /* Perfil */
+        .profile-img {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 3px solid #38bdf8;
+            object-fit: cover;
+            margin-bottom: 16px;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #f8fafc;
+        }
+
+        .bio {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        /* Seções / Categorias */
+        .section-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #38bdf8;
+            margin: 24px 0 12px 0;
+            text-align: left;
+            padding-left: 4px;
+            font-weight: 600;
+            border-left: 3px solid #38bdf8;
+            padding-left: 8px;
+        }
+
+        /* Botões de Links */
+        .link-card {
+            display: flex;
+            align-items: center;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            text-decoration: none;
+            color: #f8fafc;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .link-card:hover {
+            transform: translateY(-2px);
+            background: rgba(56, 189, 248, 0.15);
+            border-color: #38bdf8;
+            box-shadow: 0 6px 15px rgba(56, 189, 248, 0.2);
+        }
+
+        .link-card i {
+            font-size: 1.25rem;
+            margin-right: 14px;
+            color: #38bdf8;
+            width: 24px;
+            text-align: center;
+        }
+
+        .link-content {
+            text-align: left;
+            flex-grow: 1;
+        }
+
+        .link-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .link-desc {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        /* Rodapé */
+        footer {
+            margin-top: 35px;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Foto ou Logo (Substitua o link da imagem se desejar) -->
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80" alt="Fran Freitas" class="profile-img">
+        
+        <h1>Fran Freitas</h1>
+        <p class="bio">Tecnologia, Autonomia Digital, Finanças & Cuidados Pessoais 🌸💻</p>
+
+        <!-- Seção: Beleza & Consultoria -->
+        <div class="section-title">Beleza & Consultoria</div>
+        <a href="https://www.minhaloja.natura.com/consultoria/francielef1009" target="_blank" class="link-card">
+            <i class="fa-solid fa-store"></i>
+            <div class="link-content">
+                <div class="link-title">Espaço Digital Natura & Avon</div>
+                <div class="link-desc">Compre com segurança direto da minha lojinha</div>
+            </div>
+        </a>
+
+        <!-- Seção: Livros e Educação -->
+        <div class="section-title">Livros & Materiais</div>
+        <a href="https://loja.uiclap.com/titulo/ua211509" target="_blank" class="link-card">
+            <i class="fa-solid fa-book"></i>
+            <div class="link-content">
+                <div class="link-title">Livro: Tecnologia Sem Segredo</div>
+                <div class="link-desc">O manual prático da autonomia digital (UICLAP)</div>
+            </div>
+        </a>
+        <a href="#" target="_blank" class="link-card">
+            <i class="fa-solid fa-file-lines"></i>
+            <div class="link-content">
+                <div class="link-title">Apostilas e Manuais Técnicos</div>
+                <div class="link-desc">Materiais de estudo e guias práticos</div>
+            </div>
+        </a>
+
+        <!-- Seção: Sistemas & Ferramentas -->
+        <div class="section-title">Sistemas & Utilidades</div>
+        <a href="#" target="_blank" class="link-card">
+            <i class="fa-solid fa-chart-pie"></i>
+            <div class="link-content">
+                <div class="link-title">Painel Financeiro (Web)</div>
+                <div class="link-desc">Organize suas finanças com praticidade</div>
+            </div>
+        </a>
+
+        <!-- Seção: Redes e Conteúdo -->
+        <div class="section-title">Conteúdo & Contato</div>
+        <a href="https://youtube.com" target="_blank" class="link-card">
+            <i class="fa-brands fa-youtube"></i>
+            <div class="link-content">
+                <div class="link-title">Canal no YouTube</div>
+                <div class="link-desc">Prof.ª Fran Freitas — Tutoriais de TI</div>
+            </div>
+        </a>
+
+        <footer>
+            &copy; 2026 Fran BeautyCare & Tech. Todos os direitos reservados.
+        </footer>
+    </div>
+
+</body>
+</html>
