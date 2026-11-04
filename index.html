@@ -128,7 +128,7 @@
             color: #94a3b8;
         }
 
-        /* Destaque especial para o Livro e Painel com Imagem */
+        /* Destaque especial para os cards com imagem */
         .card-container {
             background: rgba(30, 41, 59, 0.85);
             border: 1px solid rgba(56, 189, 248, 0.3);
@@ -174,14 +174,14 @@
 
         .card-buttons {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
         .card-btn {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
-            padding: 6px 10px;
+            padding: 5px 8px;
             border-radius: 6px;
             text-decoration: none;
             color: #fff;
@@ -189,7 +189,7 @@
             transition: background 0.2s;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
         }
 
         .card-btn.amazon {
@@ -265,13 +265,16 @@
             <img src="Gemini_Generated_Image_r3joegr3joegr3jo.jpg" alt="Capa Livro Tecnologia Sem Segredo" class="card-thumb" onclick="openModal(this.src)">
             <div class="card-info">
                 <h3>Tecnologia Sem Segredo</h3>
-                <p>O manual prático da autonomia digital para dominar a tecnologia sem complicações.</p>
+                <p>O manual prático da autonomia digital para dominar a tecnologia.</p>
                 <div class="card-buttons">
                     <a href="https://loja.uiclap.com/titulo/ua211509" target="_blank" class="card-btn">
                         <i class="fa-solid fa-book-open"></i> Impresso
                     </a>
+                    <a href="https://go.hotmart.com/H108029638W" target="_blank" class="card-btn hotmart">
+                        <i class="fa-solid fa-fire"></i> E-book Hotmart
+                    </a>
                     <a href="https://a.co/d/0g1HLezb" target="_blank" class="card-btn amazon">
-                        <i class="fa-brands fa-amazon"></i> Digital (Amazon)
+                        <i class="fa-brands fa-amazon"></i> Amazon
                     </a>
                 </div>
             </div>
