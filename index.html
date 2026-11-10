@@ -3,7 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fran BeautyCare & Tech | Central de Links</title>
+    <title>Fran Freitas | Tecnologia, Livros e Beleza</title>
+    <meta name="description" content="Prof.ª de TI, autora e consultora Natura. Livros, apostilas para concursos, painel financeiro e ofertas Natura em um só lugar.">
+    <meta name="theme-color" content="#0f172a">
+
+    <!-- Ícone da aba do navegador -->
+    <link rel="icon" type="image/png" href="avatar-fran.png">
+    <link rel="apple-touch-icon" href="avatar-fran.png">
+
+    <!-- Prévia do link no WhatsApp, Instagram, Facebook etc. -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fran-links.vercel.app/">
+    <meta property="og:title" content="Fran Freitas | Tecnologia, Livros e Beleza">
+    <meta property="og:description" content="Livros, apostilas para concursos, painel financeiro e ofertas Natura. Tudo em um só lugar!">
+    <meta property="og:image" content="https://fran-links.vercel.app/foto-fran.png">
+    <meta property="og:locale" content="pt_BR">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Fran Freitas | Tecnologia, Livros e Beleza">
+    <meta name="twitter:description" content="Livros, apostilas para concursos, painel financeiro e ofertas Natura.">
+    <meta name="twitter:image" content="https://fran-links.vercel.app/foto-fran.png">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome para ícones -->
@@ -96,10 +114,49 @@
             color: #f8fafc;
         }
 
+        .tagline {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #38bdf8;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        /* Ícones das redes sociais */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 16px 0 24px;
+            flex-wrap: wrap;
+        }
+
+        .social-links a {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            color: #f8fafc;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .social-links a:hover { transform: translateY(-3px); }
+        .social-links a.yt:hover { background: #ef4444; border-color: #ef4444; }
+        .social-links a.mail:hover { background: #38bdf8; border-color: #38bdf8; color: #0f172a; }
+        .social-links a.natura:hover { background: #ec4899; border-color: #ec4899; }
+        .social-links a.wpp:hover { background: #22c55e; border-color: #22c55e; }
+        .social-links a.insta:hover { background: #d946ef; border-color: #d946ef; }
+
         .bio {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #94a3b8;
-            margin-bottom: 30px;
+            margin-bottom: 0;
             line-height: 1.4;
         }
 
@@ -240,8 +297,8 @@
         }
 
         .card-thumb {
-            width: 90px;
-            height: 125px;
+            width: 105px;
+            height: 148px;
             object-fit: cover;
             border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.2);
@@ -263,30 +320,35 @@
         }
 
         .card-info p {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: #94a3b8;
-            margin-bottom: 10px;
-            line-height: 1.3;
+            margin-bottom: 12px;
+            line-height: 1.35;
         }
 
         .card-buttons {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .card-btn {
-            font-size: 0.65rem;
+            font-size: 0.78rem;
             font-weight: 600;
-            padding: 5px 8px;
-            border-radius: 6px;
+            padding: 8px 12px;
+            min-height: 36px;
+            border-radius: 8px;
             text-decoration: none;
             color: #fff;
             background: #0284c7;
-            transition: background 0.2s;
+            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
-            gap: 3px;
+            gap: 6px;
+        }
+
+        .card-btn:hover {
+            transform: translateY(-1px);
         }
 
         .card-btn.amazon {
@@ -390,6 +452,19 @@
             color: #f8fafc;
         }
 
+        /* Celulares */
+        @media (max-width: 480px) {
+            .card-container { padding: 14px; gap: 12px; }
+            .card-thumb { width: 92px; height: 130px; }
+            .card-buttons { gap: 6px; }
+            .card-btn { font-size: 0.72rem; padding: 7px 9px; gap: 5px; }
+        }
+
+        /* Celulares pequenos */
+        @media (max-width: 360px) {
+            .card-thumb { width: 80px; height: 113px; }
+        }
+
         /* Rodapé */
         footer {
             margin-top: 35px;
@@ -407,18 +482,48 @@
             <img src="avatar-fran.png" alt="Avatar Fran Freitas" class="profile-img" onclick="openModal(this.src)">
         </div>
 
-        <!-- Botões do Topo: Sobre Mim & Contato via Gmail -->
-        <div class="top-buttons">
-            <button class="about-btn" onclick="openAboutModal()">
-                <i class="fa-solid fa-user-pen"></i> Sobre mim
-            </button>
-            <a href="mailto:suportefranfreitas@gmail.com" class="contact-btn">
-                <i class="fa-solid fa-envelope"></i> Contato (Gmail)
+        <h1>Fran Freitas</h1>
+        <p class="tagline">Prof.ª de TI • Autora • Consultora Natura</p>
+        <p class="bio">Tecnologia, autonomia digital, finanças e autocuidado 🌸💻</p>
+
+        <!-- Ícones das redes sociais -->
+        <div class="social-links">
+            <!-- YOUTUBE -->
+            <a href="https://www.youtube.com/@francielefreitas8350" target="_blank" rel="noopener" class="yt" aria-label="YouTube" title="YouTube">
+                <i class="fa-brands fa-youtube"></i>
+            </a>
+
+            <!-- WHATSAPP (desativado): para ativar, apague a linha "INICIO WHATSAPP" e a linha "FIM WHATSAPP"
+                 e troque 55DDDNUMERO pelo seu número, só números (ex.: 5555999999999) -->
+            <!-- INICIO WHATSAPP
+            <a href="https://wa.me/55DDDNUMERO" target="_blank" rel="noopener" class="wpp" aria-label="WhatsApp" title="WhatsApp">
+                <i class="fa-brands fa-whatsapp"></i>
+            </a>
+            FIM WHATSAPP -->
+
+            <!-- INSTAGRAM (desativado): para ativar, apague a linha "INICIO INSTAGRAM" e a linha "FIM INSTAGRAM"
+                 e troque SEUUSUARIO pelo seu usuário, sem o @ -->
+            <!-- INICIO INSTAGRAM
+            <a href="https://www.instagram.com/SEUUSUARIO" target="_blank" rel="noopener" class="insta" aria-label="Instagram" title="Instagram">
+                <i class="fa-brands fa-instagram"></i>
+            </a>
+            FIM INSTAGRAM -->
+
+            <a href="https://www.minhaloja.natura.com/consultoria/francielef1009" target="_blank" rel="noopener" class="natura" aria-label="Loja Natura" title="Minha loja Natura">
+                <i class="fa-solid fa-bag-shopping"></i>
+            </a>
+
+            <a href="mailto:suportefranfreitas@gmail.com" class="mail" aria-label="E-mail" title="E-mail">
+                <i class="fa-solid fa-envelope"></i>
             </a>
         </div>
-        
-        <h1>Fran Freitas</h1>
-        <p class="bio">Tecnologia, Autonomia Digital, Superação, Finanças & Cuidados Pessoais 🌸💻</p>
+
+        <!-- Botão Sobre Mim -->
+        <div class="top-buttons">
+            <button class="about-btn" onclick="openAboutModal()">
+                <i class="fa-solid fa-user-pen"></i> Conheça minha história
+            </button>
+        </div>
 
         <!-- ===================== SEÇÃO: ANÚNCIOS ===================== -->
         <!-- Fica escondida automaticamente quando não há anúncios ativos -->
@@ -548,7 +653,8 @@
                 <h3>Canal no YouTube</h3>
                 <p>Prof.ª Fran Freitas — Tutoriais de TI e dicas práticas.</p>
                 <div class="card-buttons">
-                    <a href="https://youtube.com" target="_blank" class="card-btn youtube">
+                    
+                    <a href="https://www.youtube.com/@francielefreitas8350" target="_blank" rel="noopener" class="card-btn youtube">
                         <i class="fa-brands fa-youtube"></i> Acessar Canal
                     </a>
                 </div>
@@ -556,7 +662,7 @@
         </div>
 
         <footer>
-            &copy; 2026 Fran BeautyCare & Tech. Todos os direitos reservados.
+            &copy; 2026 Fran Freitas. Todos os direitos reservados.
         </footer>
     </div>
 
