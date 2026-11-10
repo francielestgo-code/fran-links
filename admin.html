@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Painel de Anúncios | Fran BeautyCare & Tech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            padding: 30px 16px;
+        }
+
+        .wrap { max-width: 720px; margin: 0 auto; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        header h1 { font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
+        header h1 i { color: #38bdf8; }
+
+        .box {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .box h2 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #38bdf8;
+            margin-bottom: 16px;
+            padding-left: 8px;
+            border-left: 3px solid #38bdf8;
+        }
+
+        label { display: block; font-size: 0.8rem; color: #94a3b8; margin: 12px 0 6px; }
+
+        input[type="text"], input[type="email"], input[type="password"],
+        input[type="url"], input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            background: #0f172a;
+            color: #f8fafc;
+            font-size: 0.9rem;
+        }
+
+        input:focus { outline: none; border-color: #38bdf8; }
+
+        input[type="file"] { width: 100%; color: #cbd5e1; font-size: 0.85rem; }
+
+        .btn {
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 10px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            margin-top: 16px;
+        }
+
+        .btn:hover { transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.5; cursor: wait; transform: none; }
+
+        .btn.outline { background: transparent; color: #38bdf8; border: 1px solid #38bdf8; margin-top: 0; }
+        .btn.danger { background: #ef4444; color: #fff; }
+        .btn.small { padding: 6px 12px; font-size: 0.75rem; margin-top: 0; }
+
+        .preview {
+            margin-top: 12px;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #0f172a;
+            border-radius: 10px;
+            border: 1px dashed rgba(148, 163, 184, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 0.8rem;
+            overflow: hidden;
+        }
+
+        .preview img { width: 100%; height: 100%; object-fit: contain; }
+
+        .msg { margin-top: 12px; font-size: 0.85rem; min-height: 1.2em; }
+        .msg.ok { color: #4ade80; }
+        .msg.erro { color: #f87171; }
+
+        .hint { font-size: 0.75rem; color: #64748b; margin-top: 6px; }
+
+        .ad-item {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+            flex-wrap: wrap;
+        }
+
+        .ad-item:last-child { border-bottom: none; }
+
+        .ad-item img {
+            width: 140px;
+            aspect-ratio: 16 / 9;
+            object-fit: contain;
+            background: #0f172a;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+            flex-shrink: 0;
+        }
+
+        .ad-info { flex: 1; min-width: 180px; }
+        .ad-info h3 { font-size: 0.9rem; margin-bottom: 4px; }
+        .ad-info a { font-size: 0.75rem; color: #38bdf8; word-break: break-all; }
+        .ad-info .sem-link { font-size: 0.75rem; color: #64748b; }
+
+        .ad-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            font-size: 0.75rem;
+            color: #cbd5e1;
+        }
+
+        .ad-controls input[type="number"] { width: 70px; padding: 6px 8px; }
+
+        .badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 10px; font-weight: 700; }
+        .badge.on { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+        .badge.off { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+
+        .vazio { color: #64748b; font-size: 0.85rem; text-align: center; padding: 20px 0; }
+
+        .hidden { display: none !important; }
+
+        a.voltar { color: #94a3b8; font-size: 0.8rem; text-decoration: none; }
+        a.voltar:hover { color: #38bdf8; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <header>
+        <h1><i class="fa-solid fa-bullhorn"></i> Painel de Anúncios</h1>
+        <div style="display:flex; gap:12px; align-items:center;">
+            <a href="index.html" class="voltar"><i class="fa-solid fa-arrow-left"></i> Ver site</a>
+            <button id="btnSair" class="btn outline small hidden"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+        </div>
+    </header>
+
+    <!-- ========== LOGIN ========== -->
+    <section id="telaLogin" class="box hidden">
+        <h2>Entrar como administradora</h2>
+        <form id="formLogin">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" required autocomplete="username">
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" required autocomplete="current-password">
+            <button type="submit" class="btn" id="btnEntrar"><i class="fa-solid fa-lock-open"></i> Entrar</button>
+            <div id="msgLogin" class="msg"></div>
+        </form>
+    </section>
+
+    <!-- ========== PAINEL ========== -->
+    <section id="telaPainel" class="hidden">
+
+        <div class="box">
+            <h2>Novo anúncio</h2>
+            <form id="formAnuncio">
+                <label for="arquivo">Imagem do anúncio *</label>
+                <input type="file" id="arquivo" accept="image/png, image/jpeg, image/webp, image/gif" required>
+                <p class="hint">PNG, JPG, WEBP ou GIF até 5 MB. Tamanho ideal: 1200 × 675 px (formato 16:9).</p>
+                <div class="preview" id="preview">A pré-visualização aparece aqui</div>
+
+                <label for="titulo">Título (opcional - aparece sobre a imagem)</label>
+                <input type="text" id="titulo" maxlength="80" placeholder="Ex.: Promoção Natura - 30% OFF">
+
+                <label for="link">Link ao clicar (opcional)</label>
+                <input type="url" id="link" placeholder="https://...">
+
+                <label for="ordem">Ordem de exibição (menor aparece primeiro)</label>
+                <input type="number" id="ordem" value="0">
+
+                <button type="submit" class="btn" id="btnEnviar"><i class="fa-solid fa-cloud-arrow-up"></i> Publicar anúncio</button>
+                <div id="msgAnuncio" class="msg"></div>
+            </form>
+        </div>
+
+        <div class="box">
+            <h2>Anúncios cadastrados</h2>
+            <div id="listaAnuncios"><p class="vazio">Carregando...</p></div>
+        </div>
+    </section>
+
+    <!-- ========== SEM PERMISSÃO ========== -->
+    <section id="telaSemPermissao" class="box hidden">
+        <h2>Acesso negado</h2>
+        <p style="color:#cbd5e1; font-size:0.9rem;">Esta conta não é de administradora.</p>
+    </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const $ = (id) => document.getElementById(id);
+    const TIPOS_OK = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+    const TAMANHO_MAX = 5 * 1024 * 1024;
+
+    function mostrarMsg(el, texto, tipo) {
+        el.textContent = texto;
+        el.className = 'msg ' + (tipo || '');
+    }
+
+    // ---------- Controle de telas ----------
+    function atualizarTela(session) {
+        $('telaLogin').classList.add('hidden');
+        $('telaPainel').classList.add('hidden');
+        $('telaSemPermissao').classList.add('hidden');
+        $('btnSair').classList.add('hidden');
+
+        if (!session) {
+            $('telaLogin').classList.remove('hidden');
+            return;
+        }
+
+        $('btnSair').classList.remove('hidden');
+
+        if (session.user.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+            $('telaSemPermissao').classList.remove('hidden');
+            return;
+        }
+
+        $('telaPainel').classList.remove('hidden');
+        carregarAnuncios();
+    }
+
+    sb.auth.getSession().then(({ data }) => atualizarTela(data.session));
+    sb.auth.onAuthStateChange((_evento, session) => atualizarTela(session));
+
+    // ---------- Login / Logout ----------
+    $('formLogin').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        $('btnEntrar').disabled = true;
+        mostrarMsg($('msgLogin'), 'Entrando...');
+
+        const { error } = await sb.auth.signInWithPassword({
+            email: $('email').value.trim(),
+            password: $('senha').value
+        });
+
+        $('btnEntrar').disabled = false;
+        if (error) {
+            mostrarMsg($('msgLogin'), 'E-mail ou senha incorretos.', 'erro');
+        } else {
+            mostrarMsg($('msgLogin'), '');
+            $('senha').value = '';
+        }
+    });
+
+    $('btnSair').addEventListener('click', () => sb.auth.signOut());
+
+    // ---------- Pré-visualização ----------
+    $('arquivo').addEventListener('change', () => {
+        const arquivo = $('arquivo').files[0];
+        const preview = $('preview');
+        preview.innerHTML = '';
+        if (!arquivo) {
+            preview.textContent = 'A pré-visualização aparece aqui';
+            return;
+        }
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(arquivo);
+        preview.appendChild(img);
+    });
+
+    // ---------- Publicar anúncio ----------
+    $('formAnuncio').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const msg = $('msgAnuncio');
+        const arquivo = $('arquivo').files[0];
+
+        if (!arquivo) return mostrarMsg(msg, 'Escolha uma imagem.', 'erro');
+        if (!TIPOS_OK.includes(arquivo.type)) return mostrarMsg(msg, 'Formato não aceito. Use PNG, JPG, WEBP ou GIF.', 'erro');
+        if (arquivo.size > TAMANHO_MAX) return mostrarMsg(msg, 'A imagem passa de 5 MB. Diminua o tamanho e tente de novo.', 'erro');
+
+        $('btnEnviar').disabled = true;
+        mostrarMsg(msg, 'Enviando imagem...');
+
+        // Nome único e sem acentos/espaços
+        const extensao = arquivo.name.split('.').pop().toLowerCase();
+        const caminho = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extensao}`;
+
+        const { error: erroUpload } = await sb.storage
+            .from('anuncios')
+            .upload(caminho, arquivo, { cacheControl: '31536000', contentType: arquivo.type });
+
+        if (erroUpload) {
+            $('btnEnviar').disabled = false;
+            return mostrarMsg(msg, 'Erro ao enviar a imagem: ' + erroUpload.message, 'erro');
+        }
+
+        const { data: urlData } = sb.storage.from('anuncios').getPublicUrl(caminho);
+
+        const { error: erroInsert } = await sb.from('anuncios').insert({
+            titulo: $('titulo').value.trim() || null,
+            link: $('link').value.trim() || null,
+            ordem: parseInt($('ordem').value, 10) || 0,
+            imagem_url: urlData.publicUrl,
+            imagem_path: caminho,
+            ativo: true
+        });
+
+        $('btnEnviar').disabled = false;
+
+        if (erroInsert) {
+            await sb.storage.from('anuncios').remove([caminho]); // desfaz o upload
+            return mostrarMsg(msg, 'Erro ao salvar o anúncio: ' + erroInsert.message, 'erro');
+        }
+
+        mostrarMsg(msg, 'Anúncio publicado! Já aparece no site.', 'ok');
+        $('formAnuncio').reset();
+        $('preview').textContent = 'A pré-visualização aparece aqui';
+        carregarAnuncios();
+    });
+
+    // ---------- Listar anúncios ----------
+    async function carregarAnuncios() {
+        const lista = $('listaAnuncios');
+
+        const { data, error } = await sb
+            .from('anuncios')
+            .select('*')
+            .order('ordem', { ascending: true })
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            lista.innerHTML = '';
+            const p = document.createElement('p');
+            p.className = 'vazio';
+            p.textContent = 'Erro ao carregar: ' + error.message;
+            lista.appendChild(p);
+            return;
+        }
+
+        lista.innerHTML = '';
+
+        if (!data.length) {
+            lista.innerHTML = '<p class="vazio">Nenhum anúncio ainda. Publique o primeiro acima!</p>';
+            return;
+        }
+
+        data.forEach((ad) => lista.appendChild(criarItem(ad)));
+    }
+
+    function criarItem(ad) {
+        const item = document.createElement('div');
+        item.className = 'ad-item';
+
+        const img = document.createElement('img');
+        img.src = ad.imagem_url;
+        img.alt = ad.titulo || 'Anúncio';
+        item.appendChild(img);
+
+        const info = document.createElement('div');
+        info.className = 'ad-info';
+
+        const h3 = document.createElement('h3');
+        h3.textContent = ad.titulo || '(sem título)';
+        const badge = document.createElement('span');
+        badge.className = 'badge ' + (ad.ativo ? 'on' : 'off');
+        badge.textContent = ad.ativo ? 'NO AR' : 'PAUSADO';
+        badge.style.marginLeft = '8px';
+        h3.appendChild(badge);
+        info.appendChild(h3);
+
+        if (ad.link) {
+            const a = document.createElement('a');
+            a.href = ad.link;
+            a.target = '_blank';
+            a.rel = 'noopener';
+            a.textContent = ad.link;
+            info.appendChild(a);
+        } else {
+            const s = document.createElement('span');
+            s.className = 'sem-link';
+            s.textContent = 'Sem link (abre a imagem ampliada)';
+            info.appendChild(s);
+        }
+
+        const controles = document.createElement('div');
+        controles.className = 'ad-controls';
+
+        // Pausar / Ativar
+        const btnAtivo = document.createElement('button');
+        btnAtivo.className = 'btn outline small';
+        btnAtivo.innerHTML = ad.ativo
+            ? '<i class="fa-solid fa-pause"></i> Pausar'
+            : '<i class="fa-solid fa-play"></i> Ativar';
+        btnAtivo.onclick = async () => {
+            btnAtivo.disabled = true;
+            const { error } = await sb.from('anuncios').update({ ativo: !ad.ativo }).eq('id', ad.id);
+            if (error) alert('Erro: ' + error.message);
+            carregarAnuncios();
+        };
+        controles.appendChild(btnAtivo);
+
+        // Ordem
+        const lblOrdem = document.createElement('span');
+        lblOrdem.textContent = 'Ordem:';
+        const inpOrdem = document.createElement('input');
+        inpOrdem.type = 'number';
+        inpOrdem.value = ad.ordem;
+        const btnOrdem = document.createElement('button');
+        btnOrdem.className = 'btn outline small';
+        btnOrdem.innerHTML = '<i class="fa-solid fa-floppy-disk"></i>';
+        btnOrdem.title = 'Salvar ordem';
+        btnOrdem.onclick = async () => {
+            btnOrdem.disabled = true;
+            const { error } = await sb.from('anuncios')
+                .update({ ordem: parseInt(inpOrdem.value, 10) || 0 })
+                .eq('id', ad.id);
+            if (error) alert('Erro: ' + error.message);
+            carregarAnuncios();
+        };
+        controles.append(lblOrdem, inpOrdem, btnOrdem);
+
+        // Excluir
+        const btnExcluir = document.createElement('button');
+        btnExcluir.className = 'btn danger small';
+        btnExcluir.innerHTML = '<i class="fa-solid fa-trash"></i> Excluir';
+        btnExcluir.onclick = async () => {
+            if (!confirm('Excluir este anúncio de vez? A imagem também será apagada.')) return;
+            btnExcluir.disabled = true;
+            await sb.storage.from('anuncios').remove([ad.imagem_path]);
+            const { error } = await sb.from('anuncios').delete().eq('id', ad.id);
+            if (error) alert('Erro: ' + error.message);
+            carregarAnuncios();
+        };
+        controles.appendChild(btnExcluir);
+
+        info.appendChild(controles);
+        item.appendChild(info);
+        return item;
+    }
+</script>
+</body>
+</html>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fran BeautyCare & Tech | Central de Links</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400,500,600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome para ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -115,6 +115,115 @@
             font-weight: 600;
             border-left: 3px solid #38bdf8;
         }
+
+        /* ===================== ANÚNCIOS ===================== */
+        .ads-section {
+            margin-bottom: 8px;
+        }
+
+        .ads-carousel {
+            position: relative;
+            overflow: hidden;
+            border-radius: 14px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            background: #0f172a;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+
+        .ads-track {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .ad-slide {
+            min-width: 100%;
+            position: relative;
+            display: block;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .ad-slide img {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: contain;
+            display: block;
+            background: #0f172a;
+        }
+
+        .ad-caption {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 22px 14px 10px;
+            background: linear-gradient(transparent, rgba(15, 23, 42, 0.9));
+            color: #f8fafc;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .ad-label {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(15, 23, 42, 0.75);
+            color: #94a3b8;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .ads-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(15, 23, 42, 0.7);
+            color: #f8fafc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            z-index: 2;
+        }
+
+        .ads-arrow:hover { background: #38bdf8; color: #0f172a; }
+        .ads-arrow.prev { left: 8px; }
+        .ads-arrow.next { right: 8px; }
+
+        .ads-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .ads-dots button {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(148, 163, 184, 0.4);
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 0;
+        }
+
+        .ads-dots button.active {
+            background: #38bdf8;
+            width: 20px;
+            border-radius: 4px;
+        }
+        /* =================== FIM ANÚNCIOS =================== */
 
         /* Destaque especial para os cards com imagem */
         .card-container {
@@ -311,6 +420,22 @@
         <h1>Fran Freitas</h1>
         <p class="bio">Tecnologia, Autonomia Digital, Superação, Finanças & Cuidados Pessoais 🌸💻</p>
 
+        <!-- ===================== SEÇÃO: ANÚNCIOS ===================== -->
+        <!-- Fica escondida automaticamente quando não há anúncios ativos -->
+        <div id="adsSection" class="ads-section" style="display: none;">
+            <div class="section-title">Destaques & Parceiros</div>
+            <div class="ads-carousel">
+                <div class="ads-track" id="adsTrack"></div>
+                <button class="ads-arrow prev" id="adsPrev" aria-label="Anúncio anterior">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button class="ads-arrow next" id="adsNext" aria-label="Próximo anúncio">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="ads-dots" id="adsDots"></div>
+        </div>
+
         <!-- Seção: Beleza & Consultoria -->
         <div class="section-title">Beleza & Consultoria</div>
         
@@ -489,6 +614,127 @@
                 aboutModal.style.display = 'none';
             }
         }
+    </script>
+
+    <!-- ===================== ANÚNCIOS (Supabase) ===================== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script>
+        (function () {
+            const section = document.getElementById('adsSection');
+            const track = document.getElementById('adsTrack');
+            const dotsBox = document.getElementById('adsDots');
+            const btnPrev = document.getElementById('adsPrev');
+            const btnNext = document.getElementById('adsNext');
+
+            let atual = 0;
+            let total = 0;
+            let timer = null;
+            const TEMPO = 5000; // troca de anúncio a cada 5 segundos
+
+            function mostrar(i) {
+                atual = (i + total) % total;
+                track.style.transform = `translateX(-${atual * 100}%)`;
+                [...dotsBox.children].forEach((d, idx) => d.classList.toggle('active', idx === atual));
+            }
+
+            function iniciarAuto() {
+                clearInterval(timer);
+                if (total > 1) timer = setInterval(() => mostrar(atual + 1), TEMPO);
+            }
+
+            function navegar(i) {
+                mostrar(i);
+                iniciarAuto(); // reinicia o tempo quando a pessoa clica
+            }
+
+            function montar(anuncios) {
+                track.innerHTML = '';
+                dotsBox.innerHTML = '';
+                total = anuncios.length;
+
+                anuncios.forEach((ad, idx) => {
+                    const slide = document.createElement(ad.link ? 'a' : 'div');
+                    slide.className = 'ad-slide';
+
+                    if (ad.link) {
+                        slide.href = ad.link;
+                        slide.target = '_blank';
+                        slide.rel = 'noopener sponsored';
+                    } else {
+                        slide.onclick = () => openModal(ad.imagem_url);
+                    }
+
+                    const img = document.createElement('img');
+                    img.src = ad.imagem_url;
+                    img.alt = ad.titulo || 'Anúncio';
+                    img.loading = idx === 0 ? 'eager' : 'lazy';
+                    slide.appendChild(img);
+
+                    const label = document.createElement('span');
+                    label.className = 'ad-label';
+                    label.textContent = 'Publicidade';
+                    slide.appendChild(label);
+
+                    if (ad.titulo) {
+                        const cap = document.createElement('div');
+                        cap.className = 'ad-caption';
+                        cap.textContent = ad.titulo;
+                        slide.appendChild(cap);
+                    }
+
+                    track.appendChild(slide);
+
+                    const dot = document.createElement('button');
+                    dot.setAttribute('aria-label', `Ir para anúncio ${idx + 1}`);
+                    dot.onclick = () => navegar(idx);
+                    dotsBox.appendChild(dot);
+                });
+
+                // Com 1 anúncio só, esconde setas e bolinhas
+                const varios = total > 1;
+                btnPrev.style.display = varios ? 'flex' : 'none';
+                btnNext.style.display = varios ? 'flex' : 'none';
+                dotsBox.style.display = varios ? 'flex' : 'none';
+
+                section.style.display = 'block';
+                mostrar(0);
+                iniciarAuto();
+            }
+
+            btnPrev.onclick = () => navegar(atual - 1);
+            btnNext.onclick = () => navegar(atual + 1);
+
+            // Arrastar com o dedo no celular
+            let inicioX = null;
+            track.addEventListener('touchstart', (e) => { inicioX = e.touches[0].clientX; }, { passive: true });
+            track.addEventListener('touchend', (e) => {
+                if (inicioX === null || total < 2) return;
+                const dif = e.changedTouches[0].clientX - inicioX;
+                if (Math.abs(dif) > 40) navegar(dif < 0 ? atual + 1 : atual - 1);
+                inicioX = null;
+            });
+
+            async function carregar() {
+                try {
+                    if (typeof supabase === 'undefined' || SUPABASE_URL.startsWith('COLE_AQUI')) return;
+                    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    const { data, error } = await sb
+                        .from('anuncios')
+                        .select('titulo, link, imagem_url')
+                        .eq('ativo', true)
+                        .order('ordem', { ascending: true })
+                        .order('created_at', { ascending: false });
+
+                    if (error) { console.error('Anúncios:', error.message); return; }
+                    if (data && data.length) montar(data);
+                } catch (e) {
+                    console.error('Anúncios:', e);
+                }
+            }
+
+            carregar();
+        })();
     </script>
 
 </body>
