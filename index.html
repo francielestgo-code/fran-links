@@ -117,6 +117,8 @@
             color: #f8fafc;
         }
 
+        .nowrap { white-space: nowrap; }
+
         .tagline {
             font-size: 0.85rem;
             font-weight: 600;
@@ -224,6 +226,23 @@
             font-size: 0.85rem;
             font-weight: 600;
             text-align: left;
+        }
+
+        .ads-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ads-tag {
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #64748b;
+            background: rgba(100, 116, 139, 0.15);
+            padding: 2px 8px;
+            border-radius: 6px;
         }
 
         .ad-label {
@@ -492,7 +511,6 @@
             .ads-arrow { width: 42px; height: 42px; }
             .ads-arrow.prev { left: 14px; }
             .ads-arrow.next { right: 14px; }
-            .ad-label { font-size: 0.7rem; top: 12px; left: 12px; }
 
             .section-title { margin-top: 32px; }
             .card-container { padding: 20px; }
@@ -500,6 +518,10 @@
 
         /* Celulares */
         @media (max-width: 480px) {
+            .ads-arrow { display: none !important; }
+            .ads-dots { gap: 8px; margin-top: 12px; }
+            .ads-dots button { width: 9px; height: 9px; }
+            .ads-dots button.active { width: 22px; }
             .card-container { padding: 14px; gap: 12px; }
             .card-thumb { width: 92px; height: 130px; }
             .card-buttons { gap: 6px; }
@@ -529,7 +551,7 @@
         </div>
 
         <h1>Fran Freitas</h1>
-        <p class="tagline">Analista de Sistemas • Autora • Consultora Natura/Avon</p>
+        <p class="tagline"><span class="nowrap">Analista de Sistemas</span> • <span class="nowrap">Autora</span> • <span class="nowrap">Consultora Natura/Avon</span></p>
         <p class="bio">Livros, apostilas, ofertas Natura/Avon e serviços de parceiros 🌸💻</p>
 
         <!-- Ícones das redes sociais -->
@@ -574,7 +596,7 @@
         <!-- ===================== SEÇÃO: ANÚNCIOS ===================== -->
         <!-- Fica escondida automaticamente quando não há anúncios ativos -->
         <div id="adsSection" class="ads-section" style="display: none;">
-            <div class="section-title">Destaques & Parceiros</div>
+            <div class="section-title ads-title">Destaques & Parceiros <span class="ads-tag">Publicidade</span></div>
             <div class="ads-carousel">
                 <div class="ads-track" id="adsTrack"></div>
                 <button class="ads-arrow prev" id="adsPrev" aria-label="Anúncio anterior">
@@ -835,10 +857,6 @@
                     img.loading = idx === 0 ? 'eager' : 'lazy';
                     slide.appendChild(img);
 
-                    const label = document.createElement('span');
-                    label.className = 'ad-label';
-                    label.textContent = 'Publicidade';
-                    slide.appendChild(label);
 
                     if (ad.titulo) {
                         const cap = document.createElement('div');
