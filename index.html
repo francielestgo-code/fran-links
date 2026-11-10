@@ -459,7 +459,7 @@
 
         /* Computador: coluna mais larga, carrossel maior e cards em 2 colunas */
         @media (min-width: 1000px) {
-            body { padding: 40px 32px; }
+            body { padding: 28px 32px; }
 
             .container {
                 max-width: 980px;
@@ -483,7 +483,12 @@
             .tagline { font-size: 0.95rem; }
             .bio { font-size: 0.95rem; }
 
-            .ads-section { margin-bottom: 12px; }
+            .ads-section {
+                margin-bottom: 4px;
+                width: 100%;
+                max-width: 660px;
+                justify-self: center;
+            }
             .ads-arrow { width: 42px; height: 42px; }
             .ads-arrow.prev { left: 14px; }
             .ads-arrow.next { right: 14px; }
