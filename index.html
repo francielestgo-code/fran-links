@@ -196,7 +196,9 @@
         }
 
         .ad-slide {
-            min-width: 100%;
+            flex: 0 0 100%;
+            width: 100%;
+            min-width: 0;
             position: relative;
             display: block;
             cursor: pointer;
@@ -453,6 +455,42 @@
 
         .close-modal-btn:hover {
             color: #f8fafc;
+        }
+
+        /* Computador: coluna mais larga, carrossel maior e cards em 2 colunas */
+        @media (min-width: 1000px) {
+            body { padding: 40px 32px; }
+
+            .container {
+                max-width: 980px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                column-gap: 20px;
+            }
+
+            /* tudo ocupa a largura inteira, menos os cards */
+            .container > * { grid-column: 1 / -1; }
+            .container > .card-container { grid-column: auto; margin-bottom: 20px; }
+
+            /* card sozinho na seção ocupa a largura inteira */
+            .container > .section-title + .card-container:has(+ .section-title),
+            .container > .section-title + .card-container:has(+ footer) {
+                grid-column: 1 / -1;
+            }
+
+            .profile-img { width: 120px; height: 120px; }
+            h1 { font-size: 1.9rem; }
+            .tagline { font-size: 0.95rem; }
+            .bio { font-size: 0.95rem; }
+
+            .ads-section { margin-bottom: 12px; }
+            .ads-arrow { width: 42px; height: 42px; }
+            .ads-arrow.prev { left: 14px; }
+            .ads-arrow.next { right: 14px; }
+            .ad-label { font-size: 0.7rem; top: 12px; left: 12px; }
+
+            .section-title { margin-top: 32px; }
+            .card-container { padding: 20px; }
         }
 
         /* Celulares */
@@ -743,9 +781,21 @@
 
             function mostrar(i) {
                 atual = (i + total) % total;
-                track.style.transform = `translateX(-${atual * 100}%)`;
+                // usa a posição exata do anúncio, em pixels (funciona com qualquer zoom e tela)
+                const slide = track.children[atual];
+                const x = slide ? slide.offsetLeft : 0;
+                track.style.transform = `translateX(-${x}px)`;
                 [...dotsBox.children].forEach((d, idx) => d.classList.toggle('active', idx === atual));
             }
+
+            // Recalcula a posição quando a janela muda de tamanho ou o zoom muda
+            window.addEventListener('resize', () => {
+                if (!total) return;
+                track.style.transition = 'none';
+                mostrar(atual);
+                track.offsetHeight; // aplica na hora
+                track.style.transition = '';
+            });
 
             function iniciarAuto() {
                 clearInterval(timer);
