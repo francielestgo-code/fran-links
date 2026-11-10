@@ -224,14 +224,45 @@
         <p style="color:#cbd5e1; font-size:0.9rem;">Esta conta não é de administradora.</p>
     </section>
 
+    <!-- ========== ERRO DE CONFIGURAÇÃO ========== -->
+    <section id="telaErro" class="box hidden">
+        <h2>Algo precisa ser ajustado</h2>
+        <p id="textoErro" style="color:#f87171; font-size:0.9rem; line-height:1.5;"></p>
+    </section>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script>
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     const $ = (id) => document.getElementById(id);
+
+    // ---------- Verificação da configuração ----------
+    function mostrarErro(texto) {
+        $('textoErro').textContent = texto;
+        $('telaErro').classList.remove('hidden');
+        throw new Error(texto); // interrompe o restante do script
+    }
+
+    if (typeof supabase === 'undefined') {
+        mostrarErro('Não foi possível carregar a biblioteca do Supabase. Verifique sua internet e recarregue a página (Ctrl + F5).');
+    }
+    if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined' || typeof ADMIN_EMAIL === 'undefined') {
+        mostrarErro('O arquivo config.js não foi encontrado ou tem um erro de digitação. Confira se ele está na mesma pasta do admin.html, se foi enviado para o GitHub e se cada valor está entre aspas "assim", com ponto e vírgula no final.');
+    }
+    if (SUPABASE_URL.includes('COLE_AQUI') || SUPABASE_ANON_KEY.includes('COLE_AQUI')) {
+        mostrarErro('O config.js ainda não foi preenchido. Cole a Project URL e a chave pública do Supabase no lugar de COLE_AQUI..., salve e envie de novo para o GitHub.');
+    }
+    if (!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(SUPABASE_URL.trim())) {
+        mostrarErro('A SUPABASE_URL no config.js parece errada. Ela deve ser só assim: https://seuprojeto.supabase.co  (sem /rest/v1 nem nada no final). Valor atual: ' + SUPABASE_URL);
+    }
+
+    let sb;
+    try {
+        sb = supabase.createClient(SUPABASE_URL.trim(), SUPABASE_ANON_KEY.trim());
+    } catch (e) {
+        mostrarErro('Erro ao conectar no Supabase: ' + e.message);
+    }
     const TIPOS_OK = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
     const TAMANHO_MAX = 5 * 1024 * 1024;
 
