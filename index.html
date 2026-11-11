@@ -476,44 +476,100 @@
             color: #f8fafc;
         }
 
-        /* Computador: coluna mais larga, carrossel maior e cards em 2 colunas */
+        /* Índice lateral: escondido no celular */
+        .side-index { display: none; }
+        html { scroll-behavior: smooth; }
+
+        /* ===== COMPUTADOR: perfil fixo na lateral + conteúdo à direita ===== */
         @media (min-width: 1000px) {
-            body { padding: 28px 32px; }
+            body { padding: 36px 40px; align-items: flex-start; }
 
             .container {
-                max-width: 980px;
+                max-width: 1400px;
                 display: grid;
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 330px minmax(0, 1fr);
+                gap: 40px;
+                align-items: start;
+            }
+
+            /* Cartão do perfil, fixo ao rolar a página */
+            .profile-side {
+                position: sticky;
+                top: 36px;
+                background: rgba(30, 41, 59, 0.6);
+                border: 1px solid rgba(56, 189, 248, 0.25);
+                border-radius: 20px;
+                padding: 32px 26px;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            }
+
+            .profile-container { gap: 14px; margin-bottom: 18px; }
+            .profile-img { width: 110px; height: 110px; }
+            h1 { font-size: 1.8rem; margin-bottom: 8px; }
+            .tagline { font-size: 0.88rem; line-height: 1.6; margin-bottom: 10px; }
+            .bio { font-size: 0.88rem; line-height: 1.5; }
+            .social-links { margin: 18px 0 20px; }
+            .top-buttons { margin-bottom: 0; }
+
+            .side-index {
+                display: block;
+                margin-top: 24px;
+                padding-top: 18px;
+                border-top: 1px solid rgba(148, 163, 184, 0.2);
+                text-align: left;
+            }
+            .side-index a {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                color: #94a3b8;
+                font-size: 0.85rem;
+                padding: 8px 10px;
+                border-radius: 8px;
+                text-decoration: none;
+                transition: all 0.2s;
+            }
+            .side-index a:hover { background: rgba(56, 189, 248, 0.12); color: #f8fafc; }
+
+            /* Conteúdo à direita */
+            .content {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
                 column-gap: 20px;
+                align-items: start;
+                text-align: left;
             }
+            .content > * { grid-column: 1 / -1; }
 
-            /* tudo ocupa a largura inteira, menos os cards */
-            .container > * { grid-column: 1 / -1; }
-            .container > .card-container { grid-column: auto; margin-bottom: 20px; }
+            /* Ordem no computador: anúncios, livros e depois 3 seções lado a lado */
+            .ads-section   { order: 0; margin-bottom: 4px; }
+            .sec-livros    { order: 1; }
+            .sec-beleza    { order: 2; grid-column: auto; }
+            .sec-sistemas  { order: 3; grid-column: auto; }
+            .sec-conteudo  { order: 4; grid-column: auto; }
+            .content > footer { order: 5; text-align: center; }
 
-            /* card sozinho na seção ocupa a largura inteira */
-            .container > .section-title + .card-container:has(+ .section-title),
-            .container > .section-title + .card-container:has(+ footer) {
-                grid-column: 1 / -1;
-            }
-
-            .profile-img { width: 120px; height: 120px; }
-            h1 { font-size: 1.9rem; }
-            .tagline { font-size: 0.95rem; }
-            .bio { font-size: 0.95rem; }
-
-            .ads-section {
-                margin-bottom: 4px;
-                width: 100%;
-                max-width: 660px;
-                justify-self: center;
-            }
+            .ads-section .section-title { margin-top: 0; }
             .ads-arrow { width: 42px; height: 42px; }
             .ads-arrow.prev { left: 14px; }
             .ads-arrow.next { right: 14px; }
 
-            .section-title { margin-top: 32px; }
-            .card-container { padding: 20px; }
+            /* Livros em 2 colunas */
+            .sec-livros {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                column-gap: 20px;
+            }
+            .sec-livros > .section-title { grid-column: 1 / -1; }
+
+            .section-title { margin-top: 30px; scroll-margin-top: 24px; }
+            .sec { scroll-margin-top: 24px; }
+            .card-container { padding: 20px; margin-bottom: 20px; }
+
+            /* Cards das 3 seções menores: um pouco mais compactos */
+            .sec-beleza .card-thumb,
+            .sec-sistemas .card-thumb,
+            .sec-conteudo .card-thumb { width: 90px; height: 127px; }
         }
 
         /* Celulares */
@@ -540,7 +596,7 @@
             color: #64748b;
         }
     </style>
-    <!-- Vercel Web Analytics (estatísticas de visitas) -->
+    <!-- Vercel Web Analytics (estatísticas de visitas - plano gratuito) -->
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
@@ -549,6 +605,8 @@
 <body>
 
     <div class="container">
+        <!-- ===== PERFIL (no computador fica fixo na lateral) ===== -->
+        <aside class="profile-side">
         <!-- Foto Real e Avatar Lado a Lado -->
         <div class="profile-container">
             <img src="foto-fran.png" alt="Franciele da Silva Freitas" class="profile-img" onclick="openModal(this.src)">
@@ -598,6 +656,18 @@
             </button>
         </div>
 
+        <!-- Índice das seções (aparece só no computador) -->
+        <nav class="side-index">
+            <a href="#livros"><span>📚</span> Livros &amp; Apostilas</a>
+            <a href="#beleza"><span>💄</span> Beleza &amp; Consultoria</a>
+            <a href="#sistemas"><span>📊</span> Sistemas &amp; Utilidades</a>
+            <a href="#conteudo"><span>▶️</span> Conteúdo &amp; Contato</a>
+        </nav>
+        </aside>
+
+        <!-- ===== CONTEÚDO ===== -->
+        <main class="content">
+
         <!-- ===================== SEÇÃO: ANÚNCIOS ===================== -->
         <!-- Fica escondida automaticamente quando não há anúncios ativos -->
         <div id="adsSection" class="ads-section" style="display: none;">
@@ -615,6 +685,7 @@
         </div>
 
         <!-- Seção: Beleza & Consultoria -->
+        <section class="sec sec-beleza" id="beleza">
         <div class="section-title">Beleza & Consultoria</div>
         
         <div class="card-container">
@@ -630,7 +701,10 @@
             </div>
         </div>
 
+        </section>
+
         <!-- Seção: Livros & Apostilas -->
+        <section class="sec sec-livros" id="livros">
         <div class="section-title">Livros & Apostilas</div>
         
         <!-- Livro 1 -->
@@ -701,7 +775,10 @@
             </div>
         </div>
 
+        </section>
+
         <!-- Seção: Sistemas & Ferramentas -->
+        <section class="sec sec-sistemas" id="sistemas">
         <div class="section-title">Sistemas & Utilidades</div>
         
         <div class="card-container">
@@ -717,7 +794,10 @@
             </div>
         </div>
 
+        </section>
+
         <!-- Seção: Redes e Conteúdo -->
+        <section class="sec sec-conteudo" id="conteudo">
         <div class="section-title">Conteúdo & Contato</div>
         
         <div class="card-container">
@@ -734,9 +814,12 @@
             </div>
         </div>
 
+        </section>
+
         <footer>
             &copy; 2026 Fran Freitas. Todos os direitos reservados.
         </footer>
+        </main>
     </div>
 
     <!-- Janela Modal de Zoom para Imagens -->
