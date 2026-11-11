@@ -886,7 +886,7 @@
     </script>
 
     <!-- ===================== ANÚNCIOS (Supabase) ===================== -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.97.0"></script>
     <script src="config.js"></script>
     <script>
         (function () {
@@ -934,7 +934,14 @@
                 dotsBox.innerHTML = '';
                 total = anuncios.length;
 
+                // Segurança: só aceita endereços que começam com https://
+                const seguro = (u) => typeof u === 'string' && /^https:\/\//i.test(u);
+                anuncios = anuncios.filter(ad => seguro(ad.imagem_url));
+                total = anuncios.length;
+                if (!total) return;
+
                 anuncios.forEach((ad, idx) => {
+                    if (!seguro(ad.link)) ad.link = null;
                     const slide = document.createElement(ad.link ? 'a' : 'div');
                     slide.className = 'ad-slide';
 
