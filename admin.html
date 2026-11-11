@@ -232,7 +232,7 @@
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.97.0"></script>
 <script src="config.js"></script>
 <script>
     const $ = (id) => document.getElementById(id);
@@ -343,11 +343,18 @@
         if (!TIPOS_OK.includes(arquivo.type)) return mostrarMsg(msg, 'Formato não aceito. Use PNG, JPG, WEBP ou GIF.', 'erro');
         if (arquivo.size > TAMANHO_MAX) return mostrarMsg(msg, 'A imagem passa de 5 MB. Diminua o tamanho e tente de novo.', 'erro');
 
+        const linkDigitado = $('link').value.trim();
+        if (linkDigitado && !/^https:\/\//i.test(linkDigitado)) {
+            return mostrarMsg(msg, 'O link precisa começar com https://', 'erro');
+        }
+
         $('btnEnviar').disabled = true;
         mostrarMsg(msg, 'Enviando imagem...');
 
         // Nome único e sem acentos/espaços
-        const extensao = arquivo.name.split('.').pop().toLowerCase();
+        // extensão definida pelo tipo real do arquivo (não pelo nome)
+        const EXT = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif' };
+        const extensao = EXT[arquivo.type];
         const caminho = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extensao}`;
 
         const { error: erroUpload } = await sb.storage
