@@ -598,6 +598,84 @@
         }
         .videos-mais:hover { opacity: 0.9; }
 
+        /* ===== BOAS-VINDAS ===== */
+        .welcome-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(10, 15, 28, 0.88);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: welcomeFade 0.4s ease;
+        }
+        @keyframes welcomeFade { from { opacity: 0; } to { opacity: 1; } }
+
+        .welcome-card {
+            position: relative;
+            width: 100%;
+            max-width: 330px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #0f172a;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .welcome-video {
+            width: 100%;
+            display: block;
+            aspect-ratio: 9 / 16;
+            object-fit: cover;
+            max-height: 72vh;
+            background: #e5e7eb;
+        }
+
+        .welcome-text {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 60px 20px 22px;
+            background: linear-gradient(transparent, rgba(15, 23, 42, 0.75) 45%, rgba(15, 23, 42, 0.96));
+            text-align: center;
+        }
+        .welcome-text h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; color: #f8fafc; }
+        .welcome-text p { font-size: 0.9rem; color: #cbd5e1; margin-bottom: 16px; }
+
+        .welcome-btn {
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 12px 28px;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .welcome-btn:hover { transform: translateY(-2px); }
+
+        .welcome-close {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            z-index: 2;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(15, 23, 42, 0.6);
+            color: #f8fafc;
+            font-size: 1.4rem;
+            line-height: 1;
+            cursor: pointer;
+        }
+        .welcome-close:hover { background: rgba(239, 68, 68, 0.9); }
+
         /* Índice lateral: escondido no celular */
         .side-index { display: none; }
         html { scroll-behavior: smooth; }
@@ -774,6 +852,20 @@
     <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
+
+    <!-- ===== BOAS-VINDAS (aparece só na 1ª visita) ===== -->
+    <div id="welcomeOverlay" class="welcome-overlay" style="display: none;">
+        <div class="welcome-card">
+            <button class="welcome-close" id="welcomeClose" aria-label="Fechar">&times;</button>
+            <video id="welcomeVideo" class="welcome-video" src="welcome-web.mp4" poster="welcome-poster.jpg"
+                   autoplay muted loop playsinline preload="auto"></video>
+            <div class="welcome-text">
+                <h2>Seja bem-vinda(o)! 🌸</h2>
+                <p>Que alegria ter você no meu espaço digital.</p>
+                <button class="welcome-btn" id="welcomeEnter">Explorar o site</button>
+            </div>
+        </div>
+    </div>
 
     <div class="container">
         <!-- ===== PERFIL (no computador fica fixo na lateral) ===== -->
@@ -1066,7 +1158,33 @@
             if (event.target === aboutModal) {
                 aboutModal.style.display = 'none';
             }
-        }
+        };
+
+        // ===== BOAS-VINDAS: aparece só na 1ª visita (ou sempre com ?welcome na URL p/ testar) =====
+        (function () {
+            const overlay = document.getElementById('welcomeOverlay');
+            if (!overlay) return;
+            const video = document.getElementById('welcomeVideo');
+
+            let jaViu = false;
+            try { jaViu = localStorage.getItem('franwelcome_v1') === 'sim'; } catch (e) {}
+            const forcar = location.search.indexOf('welcome') !== -1;
+            if (jaViu && !forcar) return;
+
+            function fechar() {
+                overlay.style.display = 'none';
+                try { if (video) { video.pause(); } } catch (e) {}
+                try { localStorage.setItem('franwelcome_v1', 'sim'); } catch (e) {}
+            }
+
+            overlay.style.display = 'flex';
+            if (video) { video.play().catch(() => {}); }
+
+            document.getElementById('welcomeClose').addEventListener('click', fechar);
+            document.getElementById('welcomeEnter').addEventListener('click', fechar);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) fechar(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
+        })();
     </script>
 
     <!-- ===================== ANÚNCIOS (Supabase) ===================== -->
