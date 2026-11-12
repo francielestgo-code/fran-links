@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogos | Fran Freitas</title>
+    <meta name="description" content="Divirta-se com os joguinhos da Fran: teste seus conhecimentos de tecnologia e jogue a memória.">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" type="image/png" href="avatar-fran.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            padding: 24px 16px 48px;
+        }
+
+        .wrap { max-width: 640px; margin: 0 auto; }
+
+        .topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 12px;
+        }
+        .topo h1 { font-size: 1.25rem; display: flex; align-items: center; gap: 10px; }
+        .topo h1 i { color: #38bdf8; }
+        .voltar {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .voltar:hover { color: #38bdf8; }
+
+        .hidden { display: none !important; }
+
+        /* ===== HUB (escolha do jogo) ===== */
+        .hub-sub { color: #94a3b8; font-size: 0.95rem; margin-bottom: 22px; }
+        .jogos-grid { display: grid; gap: 16px; }
+        @media (min-width: 560px) { .jogos-grid { grid-template-columns: 1fr 1fr; } }
+
+        .jogo-card {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .jogo-card:hover { transform: translateY(-4px); border-color: #38bdf8; }
+        .jogo-card .emoji { font-size: 2.6rem; display: block; margin-bottom: 12px; }
+        .jogo-card h2 { font-size: 1.1rem; margin-bottom: 6px; }
+        .jogo-card p { font-size: 0.82rem; color: #94a3b8; line-height: 1.4; }
+
+        /* ===== Botões ===== */
+        .btn {
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 12px 24px;
+            border-radius: 24px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+            text-decoration: none;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn.outline { background: transparent; color: #38bdf8; border: 1px solid #38bdf8; }
+        .btn.verde { background: #22c55e; color: #fff; }
+        .btn.laranja { background: #ff5722; color: #fff; }
+
+        .painel {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            padding: 24px 20px;
+        }
+
+        .barra-topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .barra-topo .sair {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .barra-topo .sair:hover { color: #f87171; }
+
+        /* ===== QUIZ ===== */
+        .progresso {
+            height: 6px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .progresso > div { height: 100%; background: #38bdf8; width: 0; transition: width 0.3s; }
+
+        .pergunta { font-size: 1.15rem; font-weight: 600; line-height: 1.4; margin-bottom: 18px; }
+
+        .opcoes { display: grid; gap: 10px; }
+        .opcao {
+            text-align: left;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            background: #0f172a;
+            color: #f8fafc;
+            font-size: 0.92rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .opcao:hover:not(:disabled) { border-color: #38bdf8; }
+        .opcao .letra {
+            width: 26px; height: 26px; flex-shrink: 0;
+            border-radius: 50%;
+            background: rgba(56, 189, 248, 0.15);
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; font-weight: 700; color: #38bdf8;
+        }
+        .opcao.certa { border-color: #22c55e; background: rgba(34, 197, 94, 0.15); }
+        .opcao.certa .letra { background: #22c55e; color: #fff; }
+        .opcao.errada { border-color: #ef4444; background: rgba(239, 68, 68, 0.12); }
+        .opcao.errada .letra { background: #ef4444; color: #fff; }
+        .opcao:disabled { cursor: default; }
+
+        .explicacao {
+            margin-top: 16px;
+            font-size: 0.88rem;
+            color: #cbd5e1;
+            line-height: 1.45;
+            padding: 12px 14px;
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 3px solid #38bdf8;
+            border-radius: 8px;
+        }
+        .quiz-rodape { margin-top: 18px; text-align: right; }
+
+        /* ===== Resultado do quiz ===== */
+        .resultado { text-align: center; }
+        .resultado .emoji-grande { font-size: 3.4rem; display: block; margin-bottom: 10px; }
+        .resultado .nota { font-size: 1.1rem; color: #38bdf8; font-weight: 600; margin-bottom: 4px; }
+        .resultado h2 { font-size: 1.4rem; margin-bottom: 8px; }
+        .resultado .frase { color: #cbd5e1; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.5; }
+
+        .cta-livro {
+            background: #0f172a;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .cta-livro img { width: 70px; border-radius: 8px; flex-shrink: 0; }
+        .cta-livro .info h3 { font-size: 0.95rem; margin-bottom: 4px; }
+        .cta-livro .info p { font-size: 0.78rem; color: #94a3b8; margin-bottom: 10px; line-height: 1.35; }
+        .cta-livro .info .btn { font-size: 0.78rem; padding: 8px 14px; }
+
+        .resultado-botoes { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+        /* ===== MEMÓRIA ===== */
+        .temas { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+        .tema-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            background: #0f172a;
+            color: #cbd5e1;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tema-btn.ativo { background: #38bdf8; color: #0f172a; border-color: #38bdf8; }
+
+        .mem-stats {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+        .mem-stats b { color: #38bdf8; }
+
+        .mem-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+        .carta {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.4s;
+        }
+        .carta.virada { transform: rotateY(180deg); }
+        .carta.achou { cursor: default; }
+        .carta .face {
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .carta .verso {
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.4rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .carta .frente {
+            background: #f8fafc;
+            transform: rotateY(180deg);
+            font-size: 2rem;
+        }
+        .carta.achou .frente { background: rgba(34, 197, 94, 0.25); box-shadow: 0 0 0 2px #22c55e inset; }
+
+        .rodape-site {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+        .rodape-site a { color: #38bdf8; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <div class="topo">
+        <h1><i class="fa-solid fa-gamepad"></i> Jogos da Fran</h1>
+        <a href="index.html" class="voltar"><i class="fa-solid fa-arrow-left"></i> Voltar ao site</a>
+    </div>
+
+    <!-- ===================== HUB ===================== -->
+    <section id="hub">
+        <p class="hub-sub">Escolha um joguinho para se divertir. Funciona no celular e no computador! 🎮</p>
+        <div class="jogos-grid">
+            <div class="jogo-card" onclick="abrirQuiz()">
+                <span class="emoji">🧠</span>
+                <h2>Você manja de tecnologia?</h2>
+                <p>Responda o quiz e descubra o quanto você entende de tecnologia do dia a dia.</p>
+            </div>
+            <div class="jogo-card" onclick="abrirMemoria()">
+                <span class="emoji">🃏</span>
+                <h2>Jogo da memória</h2>
+                <p>Vire as cartas e encontre os pares. Escolha o tema: tecnologia ou beleza.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== QUIZ ===================== -->
+    <section id="quiz" class="hidden">
+        <div class="painel">
+            <div class="barra-topo">
+                <span id="quizContador">Pergunta 1 de 10</span>
+                <button class="sair" onclick="voltarHub()"><i class="fa-solid fa-xmark"></i> Sair do jogo</button>
+            </div>
+            <div class="progresso"><div id="quizBarra"></div></div>
+
+            <div id="quizJogo">
+                <p class="pergunta" id="quizPergunta"></p>
+                <div class="opcoes" id="quizOpcoes"></div>
+                <div class="explicacao hidden" id="quizExplicacao"></div>
+                <div class="quiz-rodape">
+                    <button class="btn hidden" id="quizProximo" onclick="proximaPergunta()">Próxima <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="quizResultado" class="resultado hidden"></div>
+        </div>
+    </section>
+
+    <!-- ===================== MEMÓRIA ===================== -->
+    <section id="memoria" class="hidden">
+        <div class="painel">
+            <div class="barra-topo">
+                <span>Encontre todos os pares!</span>
+                <button class="sair" onclick="voltarHub()"><i class="fa-solid fa-xmark"></i> Sair do jogo</button>
+            </div>
+
+            <div class="temas">
+                <button class="tema-btn ativo" data-tema="tech" onclick="escolherTema('tech')"><i class="fa-solid fa-laptop"></i> Tecnologia</button>
+                <button class="tema-btn" data-tema="beleza" onclick="escolherTema('beleza')"><i class="fa-solid fa-spa"></i> Beleza</button>
+            </div>
+
+            <div class="mem-stats">
+                <span>Jogadas: <b id="memJogadas">0</b></span>
+                <span>Tempo: <b id="memTempo">0s</b></span>
+                <span>Pares: <b id="memPares">0/8</b></span>
+            </div>
+
+            <div class="mem-grid" id="memGrid"></div>
+
+            <div id="memResultado" class="resultado hidden" style="margin-top:22px;"></div>
+
+            <div style="text-align:center; margin-top:18px;">
+                <button class="btn outline" onclick="reiniciarMemoria()"><i class="fa-solid fa-rotate-right"></i> Reiniciar</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="rodape-site">
+        Feito com 💙 por <a href="index.html">Fran Freitas</a>
+    </div>
+</div>
+
+<script>
+    const $ = (id) => document.getElementById(id);
+    function mostrarTela(id) {
+        ['hub', 'quiz', 'memoria'].forEach((t) => $(t).classList.toggle('hidden', t !== id));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function voltarHub() { pararTempo(); mostrarTela('hub'); }
+
+    // ===================== QUIZ =====================
+    const PERGUNTAS = [
+        { p: 'Para que serve a tecla F5 no navegador?', o: ['Atualizar a página', 'Fechar o programa', 'Aumentar o volume'], c: 0, e: 'O F5 recarrega (atualiza) a página que você está vendo.' },
+        { p: 'O que significa "www" no endereço de um site?', o: ['World Wide Web', 'Windows Web World', 'World Web Wire'], c: 0, e: '"www" vem de World Wide Web, a teia mundial de páginas da internet.' },
+        { p: 'Qual atalho serve para COPIAR um texto?', o: ['Ctrl + V', 'Ctrl + C', 'Ctrl + X'], c: 1, e: 'Ctrl + C copia. O Ctrl + V cola e o Ctrl + X recorta.' },
+        { p: 'O que é a "nuvem" (cloud) na informática?', o: ['Um antivírus', 'Guardar arquivos na internet', 'Um tipo de vírus'], c: 1, e: 'A nuvem é guardar seus arquivos na internet, como no Google Drive, para acessar de qualquer lugar.' },
+        { p: 'Para que serve o "modo avião" no celular?', o: ['Deixar a tela mais clara', 'Desligar as conexões sem fio', 'Carregar mais rápido'], c: 1, e: 'O modo avião desliga Wi-Fi, dados e Bluetooth de uma vez só.' },
+        { p: 'O que é "phishing"?', o: ['Um jogo online', 'Um golpe para roubar seus dados', 'Um programa de fotos'], c: 1, e: 'Phishing é um golpe: mensagens ou sites falsos que tentam roubar suas senhas e dados.' },
+        { p: 'O que significa o cadeado 🔒 na barra de endereço?', o: ['O site está travado', 'A conexão é segura', 'O site é pago'], c: 1, e: 'O cadeado mostra que a conexão com o site é protegida (https).' },
+        { p: 'Qual atalho DESFAZ a última ação?', o: ['Ctrl + Z', 'Ctrl + P', 'Ctrl + S'], c: 0, e: 'Ctrl + Z desfaz. É o melhor amigo de quem errou algo sem querer!' },
+        { p: 'O que é um "cookie" no navegador?', o: ['Um biscoito virtual', 'Um arquivo que guarda dados do site', 'Um tipo de vírus'], c: 1, e: 'Cookies são pequenos arquivos que guardam informações, como o seu login, para o site te reconhecer.' },
+        { p: 'O que significa "Wi-Fi"?', o: ['Internet sem fio', 'Um tipo de cabo', 'Uma marca de celular'], c: 0, e: 'Wi-Fi é a conexão de internet sem fio, por ondas de rádio.' }
+    ];
+
+    let qAtual = 0, qAcertos = 0, qRespondeu = false;
+
+    function abrirQuiz() {
+        qAtual = 0; qAcertos = 0;
+        $('quizJogo').classList.remove('hidden');
+        $('quizResultado').classList.add('hidden');
+        mostrarTela('quiz');
+        renderPergunta();
+    }
+
+    function renderPergunta() {
+        qRespondeu = false;
+        const item = PERGUNTAS[qAtual];
+        $('quizContador').textContent = `Pergunta ${qAtual + 1} de ${PERGUNTAS.length}`;
+        $('quizBarra').style.width = ((qAtual) / PERGUNTAS.length * 100) + '%';
+        $('quizPergunta').textContent = item.p;
+        $('quizExplicacao').classList.add('hidden');
+        $('quizProximo').classList.add('hidden');
+
+        const box = $('quizOpcoes');
+        box.innerHTML = '';
+        const letras = ['A', 'B', 'C', 'D'];
+        item.o.forEach((texto, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'opcao';
+            btn.innerHTML = `<span class="letra">${letras[i]}</span> <span>${texto}</span>`;
+            btn.onclick = () => responder(i, btn);
+            box.appendChild(btn);
+        });
+    }
+
+    function responder(i, btn) {
+        if (qRespondeu) return;
+        qRespondeu = true;
+        const item = PERGUNTAS[qAtual];
+        const botoes = $('quizOpcoes').querySelectorAll('.opcao');
+        botoes.forEach((b, idx) => {
+            b.disabled = true;
+            if (idx === item.c) b.classList.add('certa');
+        });
+        if (i === item.c) {
+            qAcertos++;
+        } else {
+            btn.classList.add('errada');
+        }
+        const exp = $('quizExplicacao');
+        exp.textContent = item.e;
+        exp.classList.remove('hidden');
+        $('quizProximo').classList.remove('hidden');
+        $('quizProximo').innerHTML = (qAtual === PERGUNTAS.length - 1)
+            ? 'Ver resultado <i class="fa-solid fa-flag-checkered"></i>'
+            : 'Próxima <i class="fa-solid fa-arrow-right"></i>';
+    }
+
+    function proximaPergunta() {
+        qAtual++;
+        if (qAtual < PERGUNTAS.length) {
+            renderPergunta();
+        } else {
+            mostrarResultado();
+        }
+    }
+
+    function mostrarResultado() {
+        $('quizJogo').classList.add('hidden');
+        $('quizBarra').style.width = '100%';
+        $('quizContador').textContent = 'Resultado';
+
+        let emoji, titulo, frase;
+        if (qAcertos <= 4) {
+            emoji = '😅'; titulo = 'Tá começando!';
+            frase = 'Todo mundo começa assim. Com umas dicas simples você vai longe!';
+        } else if (qAcertos <= 7) {
+            emoji = '👏'; titulo = 'Mandou bem!';
+            frase = 'Você já manja bastante de tecnologia. Dá pra melhorar ainda mais!';
+        } else {
+            emoji = '🤓'; titulo = 'Você manja muito!';
+            frase = 'Parabéns! Você entende de tecnologia e sabe se virar no dia a dia.';
+        }
+
+        const textoShare = `Eu acertei ${qAcertos} de ${PERGUNTAS.length} no quiz "Você manja de tecnologia?" da Fran Freitas! 🤓 Faça você também:`;
+        const linkSite = 'https://franfreitas.app.br/jogos.html';
+
+        const r = $('quizResultado');
+        r.innerHTML = `
+            <span class="emoji-grande">${emoji}</span>
+            <div class="nota">Você acertou ${qAcertos} de ${PERGUNTAS.length}</div>
+            <h2>${titulo}</h2>
+            <p class="frase">${frase}</p>
+
+            <div class="cta-livro">
+                <img src="capa-tecnologia-sem-segredo.jpg" alt="Tecnologia Sem Segredo">
+                <div class="info">
+                    <h3>Quer dominar a tecnologia de vez?</h3>
+                    <p>O livro <strong>Tecnologia Sem Segredo</strong> ensina o passo a passo, sem complicação.</p>
+                    <a href="https://go.hotmart.com/H108029638W" target="_blank" rel="noopener" class="btn laranja"><i class="fa-solid fa-fire"></i> Conhecer o livro</a>
+                </div>
+            </div>
+
+            <div class="resultado-botoes">
+                <button class="btn" onclick="abrirQuiz()"><i class="fa-solid fa-rotate-right"></i> Jogar de novo</button>
+                <a class="btn verde" target="_blank" rel="noopener"
+                   href="https://wa.me/?text=${encodeURIComponent(textoShare + ' ' + linkSite)}">
+                   <i class="fa-brands fa-whatsapp"></i> Compartilhar
+                </a>
+            </div>
+        `;
+        r.classList.remove('hidden');
+    }
+
+    // ===================== MEMÓRIA =====================
+    const TEMAS = {
+        tech: ['💻', '📱', '🖱️', '⌨️', '🖨️', '💾', '🎧', '📷'],
+        beleza: ['💄', '💅', '👛', '🧴', '🌸', '💍', '👠', '🧼']
+    };
+    let temaAtual = 'tech';
+    let memCartas = [], memViradas = [], memJogadas = 0, memPares = 0, memTravado = false;
+    let memTempo = 0, memTimer = null, memComecou = false;
+
+    function abrirMemoria() {
+        mostrarTela('memoria');
+        reiniciarMemoria();
+    }
+
+    function escolherTema(t) {
+        temaAtual = t;
+        document.querySelectorAll('.tema-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.tema === t));
+        reiniciarMemoria();
+    }
+
+    function embaralhar(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function pararTempo() { if (memTimer) { clearInterval(memTimer); memTimer = null; } }
+
+    function reiniciarMemoria() {
+        pararTempo();
+        memComecou = false; memTempo = 0; memJogadas = 0; memPares = 0;
+        memViradas = []; memTravado = false;
+        $('memTempo').textContent = '0s';
+        $('memJogadas').textContent = '0';
+        $('memPares').textContent = '0/8';
+        $('memResultado').classList.add('hidden');
+
+        const simbolos = TEMAS[temaAtual];
+        memCartas = embaralhar([...simbolos, ...simbolos]);
+
+        const grid = $('memGrid');
+        grid.innerHTML = '';
+        memCartas.forEach((s, idx) => {
+            const carta = document.createElement('div');
+            carta.className = 'carta';
+            carta.dataset.simbolo = s;
+            carta.dataset.idx = idx;
+            carta.innerHTML = `
+                <div class="face verso"><i class="fa-solid fa-question"></i></div>
+                <div class="face frente">${s}</div>`;
+            carta.onclick = () => virarCarta(carta);
+            grid.appendChild(carta);
+        });
+    }
+
+    function iniciarTempo() {
+        if (memComecou) return;
+        memComecou = true;
+        memTimer = setInterval(() => {
+            memTempo++;
+            $('memTempo').textContent = memTempo + 's';
+        }, 1000);
+    }
+
+    function virarCarta(carta) {
+        if (memTravado) return;
+        if (carta.classList.contains('virada') || carta.classList.contains('achou')) return;
+        iniciarTempo();
+        carta.classList.add('virada');
+        memViradas.push(carta);
+
+        if (memViradas.length === 2) {
+            memJogadas++;
+            $('memJogadas').textContent = memJogadas;
+            memTravado = true;
+            const [a, b] = memViradas;
+            if (a.dataset.simbolo === b.dataset.simbolo) {
+                setTimeout(() => {
+                    a.classList.add('achou'); b.classList.add('achou');
+                    memViradas = []; memTravado = false;
+                    memPares++;
+                    $('memPares').textContent = memPares + '/8';
+                    if (memPares === 8) venceuMemoria();
+                }, 450);
+            } else {
+                setTimeout(() => {
+                    a.classList.remove('virada'); b.classList.remove('virada');
+                    memViradas = []; memTravado = false;
+                }, 850);
+            }
+        }
+    }
+
+    function venceuMemoria() {
+        pararTempo();
+        const r = $('memResultado');
+        r.innerHTML = `
+            <span class="emoji-grande">🎉</span>
+            <h2>Você conseguiu!</h2>
+            <p class="frase">Encontrou todos os pares em <strong>${memJogadas} jogadas</strong> e <strong>${memTempo} segundos</strong>.</p>
+            <div class="resultado-botoes">
+                <button class="btn" onclick="reiniciarMemoria()"><i class="fa-solid fa-rotate-right"></i> Jogar de novo</button>
+                <button class="btn outline" onclick="voltarHub()"><i class="fa-solid fa-gamepad"></i> Outros jogos</button>
+            </div>`;
+        r.classList.remove('hidden');
+    }
+</script>
+</body>
+</html>
