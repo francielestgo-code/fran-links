@@ -694,10 +694,10 @@
             /* Ordem no computador: anúncios, livros e depois 3 seções lado a lado */
             .ads-section   { order: 0; margin-bottom: 4px; }
             .sec-livros    { order: 1; }
-            .sec-videos    { order: 2; }
-            .sec-beleza    { order: 3; grid-column: auto; }
-            .sec-sistemas  { order: 4; grid-column: auto; }
-            .sec-conteudo  { order: 5; grid-column: auto; }
+            .sec-beleza    { order: 2; grid-column: auto; }
+            .sec-sistemas  { order: 3; grid-column: auto; }
+            .sec-conteudo  { order: 4; grid-column: auto; }
+            .sec-videos    { order: 5; }
             .content > footer { order: 6; text-align: center; }
 
             /* Vídeos: 3 por linha no computador */
@@ -830,10 +830,10 @@
         <!-- Índice das seções (aparece só no computador) -->
         <nav class="side-index">
             <a href="#livros"><span>📚</span> Livros &amp; Apostilas</a>
-            <a href="#videos" id="linkVideos" style="display: none;"><span>🎬</span> Vídeos em destaque</a>
             <a href="#beleza"><span>💄</span> Beleza &amp; Consultoria</a>
             <a href="#sistemas"><span>📊</span> Sistemas &amp; Utilidades</a>
             <a href="#conteudo"><span>▶️</span> Conteúdo &amp; Contato</a>
+            <a href="#videos" id="linkVideos" style="display: none;"><span>🎬</span> Vídeos em destaque</a>
         </nav>
         </aside>
 
@@ -952,15 +952,6 @@
 
         </section>
 
-        <!-- Seção: Vídeos em destaque (gerenciados pelo painel /admin.html) -->
-        <section class="sec sec-videos" id="videos" style="display: none;">
-            <div class="section-title">Vídeos em destaque</div>
-            <div class="videos-grid" id="videosGrid"></div>
-            <a href="https://www.youtube.com/@francielefreitas8350" target="_blank" rel="noopener" class="videos-mais">
-                <i class="fa-brands fa-youtube"></i> Ver todos os vídeos no canal
-            </a>
-        </section>
-
         <!-- Seção: Sistemas & Ferramentas -->
         <section class="sec sec-sistemas" id="sistemas">
         <div class="section-title">Sistemas & Utilidades</div>
@@ -998,6 +989,15 @@
             </div>
         </div>
 
+        </section>
+
+        <!-- Seção: Vídeos em destaque (gerenciados pelo painel /admin.html) -->
+        <section class="sec sec-videos" id="videos" style="display: none;">
+            <div class="section-title">Vídeos em destaque</div>
+            <div class="videos-grid" id="videosGrid"></div>
+            <a href="https://www.youtube.com/@francielefreitas8350" target="_blank" rel="noopener" class="videos-mais">
+                <i class="fa-brands fa-youtube"></i> Ver todos os vídeos no canal
+            </a>
         </section>
 
         <footer>
