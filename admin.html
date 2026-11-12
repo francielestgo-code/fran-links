@@ -159,6 +159,24 @@
 
         .hidden { display: none !important; }
 
+        .abas { display: flex; gap: 8px; margin-bottom: 18px; }
+        .aba {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            background: rgba(30, 41, 59, 0.85);
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .aba.ativa { background: #38bdf8; color: #0f172a; border-color: #38bdf8; }
+
         a.voltar { color: #94a3b8; font-size: 0.8rem; text-decoration: none; }
         a.voltar:hover { color: #38bdf8; }
     </style>
@@ -190,6 +208,14 @@
     <!-- ========== PAINEL ========== -->
     <section id="telaPainel" class="hidden">
 
+        <!-- Abas do painel -->
+        <div class="abas">
+            <button type="button" class="aba ativa" data-aba="painelAnuncios"><i class="fa-solid fa-bullhorn"></i> Anúncios</button>
+            <button type="button" class="aba" data-aba="painelVideos"><i class="fa-brands fa-youtube"></i> Vídeos</button>
+        </div>
+
+        <div id="painelAnuncios">
+
         <div class="box">
             <h2>Novo anúncio</h2>
             <form id="formAnuncio">
@@ -215,6 +241,37 @@
         <div class="box">
             <h2>Anúncios cadastrados</h2>
             <div id="listaAnuncios"><p class="vazio">Carregando...</p></div>
+        </div>
+        </div>
+
+        <!-- ===== VÍDEOS DO YOUTUBE ===== -->
+        <div id="painelVideos" class="hidden">
+            <div class="box">
+                <h2>Novo vídeo em destaque</h2>
+                <form id="formVideo">
+                    <label for="videoLink">Link do vídeo no YouTube *</label>
+                    <input type="url" id="videoLink" required placeholder="https://www.youtube.com/watch?v=... ou https://youtu.be/...">
+                    <p class="hint">Aceita links de vídeo, Shorts e lives. A miniatura aparece sozinha.</p>
+                    <div class="preview" id="videoPreview">A miniatura do vídeo aparece aqui</div>
+
+                    <label for="videoTitulo">Título *</label>
+                    <input type="text" id="videoTitulo" required maxlength="150" placeholder="Ex.: Como corrigir a falha na ativação do Office">
+
+                    <label for="videoDescricao">Descrição curta (opcional)</label>
+                    <input type="text" id="videoDescricao" maxlength="300" placeholder="Ex.: Passo a passo simples, direto na tela.">
+
+                    <label for="videoOrdem">Ordem de exibição (menor aparece primeiro)</label>
+                    <input type="number" id="videoOrdem" value="0">
+
+                    <button type="submit" class="btn" id="btnVideo"><i class="fa-solid fa-plus"></i> Publicar vídeo</button>
+                    <div id="msgVideo" class="msg"></div>
+                </form>
+            </div>
+
+            <div class="box">
+                <h2>Vídeos cadastrados</h2>
+                <div id="listaVideos"><p class="vazio">Carregando...</p></div>
+            </div>
         </div>
     </section>
 
@@ -292,6 +349,7 @@
 
         $('telaPainel').classList.remove('hidden');
         carregarAnuncios();
+        carregarVideos();
     }
 
     sb.auth.getSession().then(({ data }) => atualizarTela(data.session));
@@ -505,6 +563,168 @@
         };
         controles.appendChild(btnExcluir);
 
+        info.appendChild(controles);
+        item.appendChild(info);
+        return item;
+    }
+
+    // ================= ABAS =================
+    document.querySelectorAll('.aba').forEach((b) => {
+        b.addEventListener('click', () => {
+            document.querySelectorAll('.aba').forEach((x) => x.classList.toggle('ativa', x === b));
+            ['painelAnuncios', 'painelVideos'].forEach((id) => $(id).classList.toggle('hidden', id !== b.dataset.aba));
+        });
+    });
+
+    // ================= VÍDEOS DO YOUTUBE =================
+    // Extrai o código de 11 caracteres de qualquer link do YouTube
+    function extrairIdYoutube(texto) {
+        let url;
+        try { url = new URL(texto.trim()); } catch (e) { return null; }
+        if (url.protocol !== 'https:' && url.protocol !== 'http:') return null;
+        const host = url.hostname.replace(/^www\.|^m\./, '');
+        let id = null;
+        if (host === 'youtu.be') {
+            id = url.pathname.split('/')[1];
+        } else if (host === 'youtube.com' || host === 'music.youtube.com') {
+            if (url.pathname === '/watch') id = url.searchParams.get('v');
+            else {
+                const m = url.pathname.match(/^\/(shorts|live|embed)\/([^/?#]+)/);
+                if (m) id = m[2];
+            }
+        }
+        return id && /^[A-Za-z0-9_-]{11}$/.test(id) ? id : null;
+    }
+
+    $('videoLink').addEventListener('input', () => {
+        const id = extrairIdYoutube($('videoLink').value);
+        const box = $('videoPreview');
+        box.innerHTML = '';
+        if (!id) { box.textContent = 'A miniatura do vídeo aparece aqui'; return; }
+        const img = document.createElement('img');
+        img.src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
+        img.style.objectFit = 'cover';
+        box.appendChild(img);
+    });
+
+    $('formVideo').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const msg = $('msgVideo');
+        const id = extrairIdYoutube($('videoLink').value);
+        const titulo = $('videoTitulo').value.trim();
+        if (!id) return mostrarMsg(msg, 'Link inválido. Copie o link do vídeo direto do YouTube (botão Compartilhar).', 'erro');
+        if (!titulo) return mostrarMsg(msg, 'Escreva um título para o vídeo.', 'erro');
+
+        $('btnVideo').disabled = true;
+        mostrarMsg(msg, 'Salvando...');
+        const { error } = await sb.from('videos').insert({
+            video_id: id,
+            titulo,
+            descricao: $('videoDescricao').value.trim() || null,
+            ordem: parseInt($('videoOrdem').value, 10) || 0,
+            ativo: true
+        });
+        $('btnVideo').disabled = false;
+        if (error) return mostrarMsg(msg, 'Erro ao salvar: ' + error.message, 'erro');
+
+        mostrarMsg(msg, 'Vídeo publicado! Já aparece no site.', 'ok');
+        $('formVideo').reset();
+        $('videoPreview').textContent = 'A miniatura do vídeo aparece aqui';
+        carregarVideos();
+    });
+
+    async function carregarVideos() {
+        const lista = $('listaVideos');
+        const { data, error } = await sb
+            .from('videos')
+            .select('*')
+            .order('ordem', { ascending: true })
+            .order('created_at', { ascending: false });
+
+        lista.innerHTML = '';
+        if (error) {
+            const p = document.createElement('p');
+            p.className = 'vazio';
+            p.textContent = 'Erro ao carregar: ' + error.message;
+            return lista.appendChild(p);
+        }
+        if (!data.length) {
+            lista.innerHTML = '<p class="vazio">Nenhum vídeo ainda. Publique o primeiro acima!</p>';
+            return;
+        }
+        data.forEach((v) => lista.appendChild(criarItemVideo(v)));
+    }
+
+    function criarItemVideo(v) {
+        const item = document.createElement('div');
+        item.className = 'ad-item';
+
+        const img = document.createElement('img');
+        img.src = 'https://i.ytimg.com/vi/' + v.video_id + '/hqdefault.jpg';
+        img.alt = v.titulo;
+        img.style.objectFit = 'cover';
+        item.appendChild(img);
+
+        const info = document.createElement('div');
+        info.className = 'ad-info';
+
+        const h3 = document.createElement('h3');
+        h3.textContent = v.titulo;
+        const badge = document.createElement('span');
+        badge.className = 'badge ' + (v.ativo ? 'on' : 'off');
+        badge.textContent = v.ativo ? 'NO AR' : 'PAUSADO';
+        badge.style.marginLeft = '8px';
+        h3.appendChild(badge);
+        info.appendChild(h3);
+
+        const a = document.createElement('a');
+        a.href = 'https://www.youtube.com/watch?v=' + v.video_id;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = 'youtube.com/watch?v=' + v.video_id;
+        info.appendChild(a);
+
+        const controles = document.createElement('div');
+        controles.className = 'ad-controls';
+
+        const btnAtivo = document.createElement('button');
+        btnAtivo.className = 'btn outline small';
+        btnAtivo.innerHTML = v.ativo ? '<i class="fa-solid fa-pause"></i> Pausar' : '<i class="fa-solid fa-play"></i> Ativar';
+        btnAtivo.onclick = async () => {
+            btnAtivo.disabled = true;
+            const { error } = await sb.from('videos').update({ ativo: !v.ativo }).eq('id', v.id);
+            if (error) alert('Erro: ' + error.message);
+            carregarVideos();
+        };
+
+        const lbl = document.createElement('span');
+        lbl.textContent = 'Ordem:';
+        const inp = document.createElement('input');
+        inp.type = 'number';
+        inp.value = v.ordem;
+        const btnOrdem = document.createElement('button');
+        btnOrdem.className = 'btn outline small';
+        btnOrdem.innerHTML = '<i class="fa-solid fa-floppy-disk"></i>';
+        btnOrdem.title = 'Salvar ordem';
+        btnOrdem.onclick = async () => {
+            btnOrdem.disabled = true;
+            const { error } = await sb.from('videos').update({ ordem: parseInt(inp.value, 10) || 0 }).eq('id', v.id);
+            if (error) alert('Erro: ' + error.message);
+            carregarVideos();
+        };
+
+        const btnExcluir = document.createElement('button');
+        btnExcluir.className = 'btn danger small';
+        btnExcluir.innerHTML = '<i class="fa-solid fa-trash"></i> Excluir';
+        btnExcluir.onclick = async () => {
+            if (!confirm('Tirar este vídeo do site? (o vídeo continua no YouTube)')) return;
+            btnExcluir.disabled = true;
+            const { error } = await sb.from('videos').delete().eq('id', v.id);
+            if (error) alert('Erro: ' + error.message);
+            carregarVideos();
+        };
+
+        controles.append(btnAtivo, lbl, inp, btnOrdem, btnExcluir);
         info.appendChild(controles);
         item.appendChild(info);
         return item;
