@@ -800,7 +800,7 @@
             /* Conteúdo à direita */
             .content {
                 display: grid;
-                grid-template-columns: repeat(3, minmax(0, 1fr));
+                grid-template-columns: repeat(2, minmax(0, 1fr));
                 column-gap: 20px;
                 align-items: start;
                 text-align: left;
@@ -812,7 +812,7 @@
             .sec-livros    { order: 1; }
             .sec-beleza    { order: 2; grid-column: auto; }
             .sec-sistemas  { order: 3; grid-column: auto; }
-            .sec-conteudo  { order: 4; grid-column: auto; }
+            .sec-conteudo  { order: 4; grid-column: 1 / -1; }
             .sec-videos    { order: 5; }
             .content > footer { order: 6; text-align: center; }
 
@@ -844,6 +844,14 @@
                 column-gap: 20px;
             }
             .sec-livros > .section-title { grid-column: 1 / -1; }
+
+            /* Conteúdo & Contato: YouTube e Jogos lado a lado */
+            .sec-conteudo {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                column-gap: 20px;
+            }
+            .sec-conteudo > .section-title { grid-column: 1 / -1; }
 
             .section-title { margin-top: 30px; scroll-margin-top: 24px; }
             .sec { scroll-margin-top: 24px; }
