@@ -635,7 +635,8 @@
             }
 
             .container {
-                max-width: 1640px;
+                max-width: 2100px;
+                width: 100%;
                 display: grid;
                 grid-template-columns: 340px minmax(0, 1fr);
                 gap: 40px;
@@ -710,10 +711,10 @@
             .video-card { width: auto; }
 
             .ads-section .section-title { margin-top: 0; }
-            /* carrossel nunca mais alto que a tela: os livros aparecem logo abaixo */
+            /* carrossel grande, mas sem passar da altura da tela (os livros aparecem logo abaixo) */
             .ads-carousel, .ads-dots {
                 width: 100%;
-                max-width: calc((100vh - 300px) * 16 / 9);
+                max-width: calc((100vh - 210px) * 16 / 9);
                 margin-left: auto;
                 margin-right: auto;
             }
