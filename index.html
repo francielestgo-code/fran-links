@@ -793,23 +793,18 @@
             .side-index a:hover { background: rgba(56, 189, 248, 0.12); color: #f8fafc; }
 
             /* Conteúdo à direita */
+            /* Layout em mosaico: preenche os espaços sem deixar buracos */
             .content {
-                display: grid;
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+                column-count: 2;
                 column-gap: 20px;
-                align-items: start;
                 text-align: left;
             }
-            .content > * { grid-column: 1 / -1; }
-
-            /* Ordem no computador: anúncios, livros e depois 3 seções lado a lado */
-            .ads-section   { order: 0; margin-bottom: 4px; }
-            .sec-livros    { order: 1; }
-            .sec-sistemas  { order: 2; grid-column: auto; }
-            .sec-afiliados { order: 3; grid-column: auto; }
-            .sec-conteudo  { order: 4; grid-column: 1 / -1; }
-            .sec-videos    { order: 5; }
-            .content > footer { order: 6; text-align: center; }
+            .content > * { break-inside: avoid; }
+            /* Estas seções ocupam a largura toda */
+            .ads-section      { margin-bottom: 4px; column-span: all; }
+            .sec-livros       { column-span: all; }
+            .sec-videos       { column-span: all; }
+            .content > footer { text-align: center; column-span: all; }
 
             /* Vídeos: 3 por linha no computador */
             .videos-grid {
@@ -840,13 +835,8 @@
             }
             .sec-livros > .section-title { grid-column: 1 / -1; }
 
-            /* Conteúdo & Contato: YouTube e Jogos lado a lado */
-            .sec-conteudo {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                column-gap: 20px;
-            }
-            .sec-conteudo > .section-title { grid-column: 1 / -1; }
+            /* Conteúdo & Jogos: cards empilhados nesta coluna do mosaico */
+            .sec-conteudo .card-container { margin-bottom: 20px; }
 
             .section-title { margin-top: 30px; scroll-margin-top: 24px; }
             .sec { scroll-margin-top: 24px; }
