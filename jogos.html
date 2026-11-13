@@ -173,6 +173,17 @@
         .blocos-controls { display: flex; gap: 10px; margin-top: 18px; }
         .blocos-controls button { background: #111c30; border: 1px solid #243247; color: #cbd5e1; border-radius: 12px; width: 66px; height: 58px; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; }
         .blocos-controls button:active { background: #1e3a5f; border-color: #38bdf8; }
+        .forca-svg { width: 180px; height: auto; display: block; margin: 6px auto 4px; }
+        .forca-dica { text-align: center; color: #94a3b8; font-size: 0.92rem; margin: 6px 0 2px; }
+        .forca-dica b { color: #cbd5e1; }
+        .forca-palavra { text-align: center; font-size: 1.9rem; letter-spacing: 9px; font-weight: 700; color: #e2e8f0; margin: 12px 0 6px; font-family: 'Courier New', monospace; }
+        .forca-erros { text-align: center; color: #94a3b8; font-size: 0.85rem; margin-bottom: 4px; }
+        .forca-erros b { color: #f87171; }
+        .forca-teclado { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; max-width: 420px; margin: 16px auto 0; }
+        .forca-teclado button { background: #111c30; border: 1px solid #243247; color: #cbd5e1; border-radius: 8px; padding: 12px 0; font-size: 0.98rem; font-weight: 600; cursor: pointer; }
+        .forca-teclado button:disabled { cursor: default; }
+        .forca-teclado button.ok { background: rgba(34, 197, 94, 0.22); border-color: #22c55e; color: #86efac; }
+        .forca-teclado button.no { background: rgba(239, 68, 68, 0.16); border-color: #ef4444; color: #fca5a5; }
 
         .explicacao {
             margin-top: 16px;
@@ -334,6 +345,11 @@
                 <h2>Encaixe de blocos</h2>
                 <p>Aquele dos bloquinhos que caem! Gire e encaixe as peças para completar as linhas.</p>
             </div>
+            <div class="jogo-card" onclick="abrirForca()">
+                <span class="emoji">🔤</span>
+                <h2>Forca educativa</h2>
+                <p>Adivinhe a palavra de tecnologia letra por letra, antes que o bonequinho complete!</p>
+            </div>
         </div>
     </section>
 
@@ -462,6 +478,26 @@
         </div>
     </section>
 
+    <!-- ===================== FORCA EDUCATIVA ===================== -->
+    <section id="forca" class="hidden">
+        <div class="painel">
+            <div class="barra-topo">
+                <span>🔤 Forca educativa</span>
+                <button class="sair" onclick="voltarHub()"><i class="fa-solid fa-xmark"></i> Sair do jogo</button>
+            </div>
+
+            <div id="forcaJogo">
+                <div class="forca-svg" id="forcaBoneco"></div>
+                <p class="forca-dica">Dica: <b id="forcaDica"></b></p>
+                <div class="forca-palavra" id="forcaPalavra"></div>
+                <p class="forca-erros">Erros: <b id="forcaErros">0</b> de 6</p>
+                <div class="forca-teclado" id="forcaTeclado"></div>
+            </div>
+
+            <div id="forcaResultado" class="resultado hidden"></div>
+        </div>
+    </section>
+
     <div class="rodape-site">
         Feito com 💙 por <a href="index.html">Fran Freitas</a>
     </div>
@@ -470,7 +506,7 @@
 <script>
     const $ = (id) => document.getElementById(id);
     function mostrarTela(id) {
-        ['hub', 'quiz', 'memoria', 'pecas', 'cobra', 'blocos'].forEach((t) => $(t).classList.toggle('hidden', t !== id));
+        ['hub', 'quiz', 'memoria', 'pecas', 'cobra', 'blocos', 'forca'].forEach((t) => $(t).classList.toggle('hidden', t !== id));
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     function voltarHub() { pararTempo(); cobraParar(); blocosParar(); mostrarTela('hub'); }
@@ -1249,6 +1285,132 @@
             <p class="frase">Seu recorde é ${bHi} ponto(s). Bora tentar de novo?</p>
             <div class="resultado-botoes">
                 <button class="btn" onclick="blocosIniciar()"><i class="fa-solid fa-rotate-right"></i> Jogar de novo</button>
+                <button class="btn outline" onclick="voltarHub()"><i class="fa-solid fa-gamepad"></i> Outros jogos</button>
+                <a class="btn verde" target="_blank" rel="noopener"
+                   href="https://wa.me/?text=${encodeURIComponent(textoShare + ' ' + linkSite)}">
+                   <i class="fa-brands fa-whatsapp"></i> Compartilhar
+                </a>
+            </div>`;
+        r.classList.remove('hidden');
+    }
+
+    // ===================== FORCA EDUCATIVA =====================
+    const FORCA_PALAVRAS = [
+        { p: 'COMPUTADOR', d: 'Máquina que processa informações' },
+        { p: 'TECLADO', d: 'Você usa para digitar as letras' },
+        { p: 'MONITOR', d: 'A tela do computador' },
+        { p: 'MOUSE', d: 'Controla a setinha na tela' },
+        { p: 'INTERNET', d: 'A rede mundial de computadores' },
+        { p: 'SENHA', d: 'Código secreto para entrar na conta' },
+        { p: 'ARQUIVO', d: 'Documento guardado no computador' },
+        { p: 'NAVEGADOR', d: 'Programa para acessar sites (Chrome, Edge)' },
+        { p: 'NUVEM', d: 'Onde você guarda arquivos pela internet' },
+        { p: 'DOWNLOAD', d: 'Baixar algo da internet' },
+        { p: 'IMPRESSORA', d: 'Coloca no papel o que está na tela' },
+        { p: 'PROCESSADOR', d: 'O cérebro do computador' },
+        { p: 'MEMORIA', d: 'A RAM é um tipo dela' },
+        { p: 'ROTEADOR', d: 'Distribui o wi-fi pela casa' },
+        { p: 'NOTEBOOK', d: 'Computador portátil' },
+        { p: 'PENDRIVE', d: 'Guarda arquivos e cabe no bolso' },
+        { p: 'ANTIVIRUS', d: 'Protege o aparelho contra ameaças' },
+        { p: 'PLANILHA', d: 'Tabela de cálculos (tipo Excel)' },
+        { p: 'APLICATIVO', d: 'Programa do celular (o famoso app)' },
+        { p: 'BLUETOOTH', d: 'Conexão sem fio de curta distância' },
+        { p: 'HARDWARE', d: 'A parte física do computador' },
+        { p: 'SOFTWARE', d: 'Os programas, a parte que não se toca' },
+        { p: 'EMAIL', d: 'O correio eletrônico' },
+        { p: 'BACKUP', d: 'Cópia de segurança dos arquivos' },
+        { p: 'TECNOLOGIA', d: 'O tema preferido da Fran!' }
+    ];
+    const FORCA_PARTES = [
+        '<circle cx="130" cy="62" r="15" fill="none" stroke="#e2e8f0" stroke-width="4"/>',
+        '<line x1="130" y1="77" x2="130" y2="130" stroke="#e2e8f0" stroke-width="4"/>',
+        '<line x1="130" y1="90" x2="108" y2="112" stroke="#e2e8f0" stroke-width="4"/>',
+        '<line x1="130" y1="90" x2="152" y2="112" stroke="#e2e8f0" stroke-width="4"/>',
+        '<line x1="130" y1="130" x2="110" y2="162" stroke="#e2e8f0" stroke-width="4"/>',
+        '<line x1="130" y1="130" x2="150" y2="162" stroke="#e2e8f0" stroke-width="4"/>'
+    ];
+    const ALFABETO = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    let fPalavra, fDica, fAchadas, fErros, fRodando, fSetupOk = false;
+
+    function forcaSetup() {
+        if (fSetupOk) return;
+        fSetupOk = true;
+        const tec = $('forcaTeclado');
+        ALFABETO.forEach((ch) => {
+            const b = document.createElement('button');
+            b.textContent = ch; b.dataset.l = ch;
+            b.onclick = () => forcaLetra(ch);
+            tec.appendChild(b);
+        });
+        document.addEventListener('keydown', (e) => {
+            if ($('forca').classList.contains('hidden')) return;
+            const ch = (e.key || '').toUpperCase();
+            if (ch.length === 1 && ch >= 'A' && ch <= 'Z') forcaLetra(ch);
+        });
+    }
+
+    function abrirForca() { forcaSetup(); mostrarTela('forca'); forcaIniciar(); }
+
+    function forcaIniciar() {
+        const item = FORCA_PALAVRAS[Math.floor(Math.random() * FORCA_PALAVRAS.length)];
+        fPalavra = item.p; fDica = item.d;
+        fAchadas = new Set(); fErros = 0; fRodando = true;
+        $('forcaJogo').classList.remove('hidden');
+        $('forcaResultado').classList.add('hidden');
+        $('forcaDica').textContent = fDica;
+        $('forcaTeclado').querySelectorAll('button').forEach((b) => { b.disabled = false; b.className = ''; });
+        forcaRender();
+    }
+
+    function forcaDesenho() {
+        let partes = '';
+        for (let i = 0; i < fErros && i < FORCA_PARTES.length; i++) partes += FORCA_PARTES[i];
+        return `<svg class="forca-svg" viewBox="0 0 200 200">
+            <line x1="20" y1="190" x2="95" y2="190" stroke="#38bdf8" stroke-width="5"/>
+            <line x1="40" y1="190" x2="40" y2="20" stroke="#38bdf8" stroke-width="5"/>
+            <line x1="40" y1="20" x2="130" y2="20" stroke="#38bdf8" stroke-width="5"/>
+            <line x1="130" y1="20" x2="130" y2="47" stroke="#38bdf8" stroke-width="5"/>
+            ${partes}</svg>`;
+    }
+
+    function forcaRender() {
+        $('forcaBoneco').innerHTML = forcaDesenho();
+        $('forcaErros').textContent = fErros;
+        const vis = fPalavra.split('').map((c) => fAchadas.has(c) ? c : '_').join(' ');
+        $('forcaPalavra').textContent = vis;
+    }
+
+    function forcaLetra(ch) {
+        if (!fRodando || fAchadas.has(ch)) return;
+        fAchadas.add(ch);
+        const btn = $('forcaTeclado').querySelector(`button[data-l="${ch}"]`);
+        if (btn) btn.disabled = true;
+        if (fPalavra.includes(ch)) {
+            if (btn) btn.classList.add('ok');
+            if (fPalavra.split('').every((c) => fAchadas.has(c))) { forcaRender(); forcaFim(true); return; }
+        } else {
+            if (btn) btn.classList.add('no');
+            fErros++;
+            if (fErros >= 6) { forcaRender(); forcaFim(false); return; }
+        }
+        forcaRender();
+    }
+
+    function forcaFim(venceu) {
+        fRodando = false;
+        $('forcaJogo').classList.add('hidden');
+        const textoShare = venceu
+            ? `Acertei a palavra "${fPalavra}" na Forca educativa da Fran Freitas! 🔤 Tenta você também:`
+            : `Quase acertei na Forca educativa da Fran Freitas! 🔤 Vem testar seus conhecimentos:`;
+        const linkSite = 'https://franfreitas.app.br/jogos.html';
+        const r = $('forcaResultado');
+        r.innerHTML = `
+            <span class="emoji-grande">${venceu ? '🎉' : '😅'}</span>
+            <h2>${venceu ? 'Você acertou!' : 'Quase lá!'}</h2>
+            <p class="frase">${venceu ? 'Mandou muito bem!' : 'Não foi dessa vez.'} A palavra era <strong>${fPalavra}</strong>.<br><span style="color:#94a3b8;font-size:0.9em;">${fDica}</span></p>
+            <div class="resultado-botoes">
+                <button class="btn" onclick="forcaIniciar()"><i class="fa-solid fa-rotate-right"></i> Jogar de novo</button>
                 <button class="btn outline" onclick="voltarHub()"><i class="fa-solid fa-gamepad"></i> Outros jogos</button>
                 <a class="btn verde" target="_blank" rel="noopener"
                    href="https://wa.me/?text=${encodeURIComponent(textoShare + ' ' + linkSite)}">
