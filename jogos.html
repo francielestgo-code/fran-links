@@ -158,6 +158,16 @@
             display: flex; align-items: center; justify-content: center;
         }
         .peca-palco svg { width: 100%; max-width: 230px; height: auto; display: block; }
+        .cobra-wrap { display: flex; flex-direction: column; align-items: center; }
+        #cobraCanvas { background: #0b1220; border: 1px solid #1e293b; border-radius: 14px; width: 100%; max-width: 380px; height: auto; touch-action: none; }
+        .cobra-placar { display: flex; gap: 26px; justify-content: center; margin: 2px 0 16px; font-size: 0.92rem; color: #94a3b8; }
+        .cobra-placar b { color: #38bdf8; }
+        .dpad { display: grid; grid-template-columns: repeat(3, 58px); grid-template-rows: repeat(3, 58px); gap: 8px; margin-top: 18px; }
+        .dpad button { background: #111c30; border: 1px solid #243247; color: #cbd5e1; border-radius: 12px; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; }
+        .dpad button:active { background: #1e3a5f; border-color: #38bdf8; }
+        .d-up { grid-column: 2; grid-row: 1; } .d-left { grid-column: 1; grid-row: 2; }
+        .d-right { grid-column: 3; grid-row: 2; } .d-down { grid-column: 2; grid-row: 3; }
+        .cobra-dica { font-size: 0.78rem; color: #64748b; text-align: center; margin-top: 12px; }
 
         .explicacao {
             margin-top: 16px;
@@ -309,6 +319,11 @@
                 <h2>Jogo da memória</h2>
                 <p>Vire as cartas e encontre os pares. Escolha o tema: tecnologia ou beleza.</p>
             </div>
+            <div class="jogo-card" onclick="abrirCobra()">
+                <span class="emoji">🐍</span>
+                <h2>Jogo da cobrinha</h2>
+                <p>O clássico dos celulares antigos! Coma as frutinhas e cresça sem bater nas paredes.</p>
+            </div>
         </div>
     </section>
 
@@ -386,6 +401,31 @@
         </div>
     </section>
 
+    <!-- ===================== JOGO DA COBRINHA ===================== -->
+    <section id="cobra" class="hidden">
+        <div class="painel">
+            <div class="barra-topo">
+                <span>🐍 Jogo da cobrinha</span>
+                <button class="sair" onclick="voltarHub()"><i class="fa-solid fa-xmark"></i> Sair do jogo</button>
+            </div>
+            <div class="cobra-placar">
+                <span>Pontos: <b id="cobraPts">0</b></span>
+                <span>Recorde: <b id="cobraHi">0</b></span>
+            </div>
+            <div class="cobra-wrap">
+                <canvas id="cobraCanvas" width="380" height="380"></canvas>
+                <div class="dpad">
+                    <button class="d-up" onclick="cobraDir(0,-1)">▲</button>
+                    <button class="d-left" onclick="cobraDir(-1,0)">◀</button>
+                    <button class="d-right" onclick="cobraDir(1,0)">▶</button>
+                    <button class="d-down" onclick="cobraDir(0,1)">▼</button>
+                </div>
+                <p class="cobra-dica">No computador use as setas do teclado. No celular, use os botões ou deslize o dedo na tela.</p>
+            </div>
+            <div id="cobraResultado" class="resultado hidden" style="margin-top:18px;"></div>
+        </div>
+    </section>
+
     <div class="rodape-site">
         Feito com 💙 por <a href="index.html">Fran Freitas</a>
     </div>
@@ -394,10 +434,10 @@
 <script>
     const $ = (id) => document.getElementById(id);
     function mostrarTela(id) {
-        ['hub', 'quiz', 'memoria', 'pecas'].forEach((t) => $(t).classList.toggle('hidden', t !== id));
+        ['hub', 'quiz', 'memoria', 'pecas', 'cobra'].forEach((t) => $(t).classList.toggle('hidden', t !== id));
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    function voltarHub() { pararTempo(); mostrarTela('hub'); }
+    function voltarHub() { pararTempo(); cobraParar(); mostrarTela('hub'); }
 
     function abrirPecas() { pecasIniciar(); mostrarTela('pecas'); }
 
@@ -915,6 +955,114 @@
                 </a>
             </div>
         `;
+        r.classList.remove('hidden');
+    }
+
+    // ===================== JOGO DA COBRINHA =====================
+    const C_N = 19, C_CELL = 20;
+    let cCtx, cSnake, cDir, cNext, cFood, cPts, cHi, cTimer, cRodando, cVel, cProntoSetup = false;
+
+    function rr(ctx, x, y, w, h, r) {
+        if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fill(); }
+        else ctx.fillRect(x, y, w, h);
+    }
+
+    function cobraSetup() {
+        if (cProntoSetup) return;
+        cProntoSetup = true;
+        const cv = $('cobraCanvas');
+        // teclado
+        document.addEventListener('keydown', (e) => {
+            if ($('cobra').classList.contains('hidden')) return;
+            const k = e.key;
+            if (k === 'ArrowUp' || k === 'w') cobraDir(0, -1);
+            else if (k === 'ArrowDown' || k === 's') cobraDir(0, 1);
+            else if (k === 'ArrowLeft' || k === 'a') cobraDir(-1, 0);
+            else if (k === 'ArrowRight' || k === 'd') cobraDir(1, 0);
+            else return;
+            e.preventDefault();
+        });
+        // deslizar o dedo
+        let tsx = null, tsy = null;
+        cv.addEventListener('touchstart', (e) => { const t = e.touches[0]; tsx = t.clientX; tsy = t.clientY; }, { passive: true });
+        cv.addEventListener('touchmove', (e) => {
+            if (tsx === null) return;
+            const t = e.touches[0], dx = t.clientX - tsx, dy = t.clientY - tsy;
+            if (Math.abs(dx) + Math.abs(dy) < 24) return;
+            if (Math.abs(dx) > Math.abs(dy)) cobraDir(dx > 0 ? 1 : -1, 0);
+            else cobraDir(0, dy > 0 ? 1 : -1);
+            tsx = null;
+        }, { passive: true });
+    }
+
+    function abrirCobra() { cobraSetup(); mostrarTela('cobra'); cobraIniciar(); }
+    function cobraParar() { cRodando = false; if (cTimer) { clearTimeout(cTimer); cTimer = null; } }
+
+    function cobraIniciar() {
+        cCtx = $('cobraCanvas').getContext('2d');
+        cSnake = [{ x: 9, y: 9 }, { x: 8, y: 9 }, { x: 7, y: 9 }];
+        cDir = { x: 1, y: 0 }; cNext = { x: 1, y: 0 };
+        cPts = 0; cVel = 150;
+        try { cHi = +localStorage.getItem('fran_cobra_hi') || 0; } catch (e) { cHi = 0; }
+        $('cobraPts').textContent = 0; $('cobraHi').textContent = cHi;
+        $('cobraResultado').classList.add('hidden');
+        cFood = cobraNovaComida();
+        cRodando = true;
+        cobraDesenhar();
+        cobraLoop();
+    }
+
+    function cobraLoop() { if (!cRodando) return; cTimer = setTimeout(() => { cobraPasso(); cobraLoop(); }, cVel); }
+    function cobraDir(x, y) { if (x === -cDir.x && y === -cDir.y) return; cNext = { x, y }; }
+    function cobraNovaComida() {
+        let f;
+        do { f = { x: Math.floor(Math.random() * C_N), y: Math.floor(Math.random() * C_N) }; }
+        while (cSnake.some((s) => s.x === f.x && s.y === f.y));
+        return f;
+    }
+
+    function cobraPasso() {
+        cDir = cNext;
+        const head = { x: cSnake[0].x + cDir.x, y: cSnake[0].y + cDir.y };
+        if (head.x < 0 || head.y < 0 || head.x >= C_N || head.y >= C_N || cSnake.some((s) => s.x === head.x && s.y === head.y)) {
+            cobraFim(); return;
+        }
+        cSnake.unshift(head);
+        if (head.x === cFood.x && head.y === cFood.y) {
+            cPts++; $('cobraPts').textContent = cPts;
+            cFood = cobraNovaComida();
+            if (cVel > 75) cVel -= 4;
+        } else cSnake.pop();
+        cobraDesenhar();
+    }
+
+    function cobraDesenhar() {
+        const ctx = cCtx, S = C_CELL;
+        ctx.fillStyle = '#0b1220'; ctx.fillRect(0, 0, C_N * S, C_N * S);
+        ctx.fillStyle = '#f43f5e'; rr(ctx, cFood.x * S + 3, cFood.y * S + 3, S - 6, S - 6, 6);
+        cSnake.forEach((s, i) => { ctx.fillStyle = i === 0 ? '#7dd3fc' : '#38bdf8'; rr(ctx, s.x * S + 2, s.y * S + 2, S - 4, S - 4, 5); });
+    }
+
+    function cobraFim() {
+        cobraParar();
+        if (cPts > cHi) { cHi = cPts; try { localStorage.setItem('fran_cobra_hi', cHi); } catch (e) {} }
+        $('cobraHi').textContent = cHi;
+        const textoShare = `Fiz ${cPts} ponto(s) no Jogo da Cobrinha da Fran Freitas! 🐍 Vem jogar:`;
+        const linkSite = 'https://franfreitas.app.br/jogos.html';
+        const r = $('cobraResultado');
+        r.innerHTML = `
+            <span class="emoji-grande">🐍</span>
+            <div class="nota">Pontuação: ${cPts}</div>
+            <h2>Fim de jogo!</h2>
+            <p class="frase">Seu recorde é ${cHi} ponto(s). Consegue superar?</p>
+            <div class="resultado-botoes">
+                <button class="btn" onclick="cobraIniciar()"><i class="fa-solid fa-rotate-right"></i> Jogar de novo</button>
+                <button class="btn outline" onclick="voltarHub()"><i class="fa-solid fa-gamepad"></i> Outros jogos</button>
+                <a class="btn verde" target="_blank" rel="noopener"
+                   href="https://wa.me/?text=${encodeURIComponent(textoShare + ' ' + linkSite)}">
+                   <i class="fa-brands fa-whatsapp"></i> Compartilhar
+                </a>
+            </div>`;
         r.classList.remove('hidden');
     }
 </script>
