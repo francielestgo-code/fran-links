@@ -1074,7 +1074,7 @@
         cCtx = $('cobraCanvas').getContext('2d');
         cSnake = [{ x: 9, y: 9 }, { x: 8, y: 9 }, { x: 7, y: 9 }];
         cDir = { x: 1, y: 0 }; cNext = { x: 1, y: 0 };
-        cPts = 0; cVel = 150;
+        cPts = 0; cVel = 230;
         try { cHi = +localStorage.getItem('fran_cobra_hi') || 0; } catch (e) { cHi = 0; }
         $('cobraPts').textContent = 0; $('cobraHi').textContent = cHi;
         $('cobraResultado').classList.add('hidden');
@@ -1103,7 +1103,7 @@
         if (head.x === cFood.x && head.y === cFood.y) {
             cPts++; $('cobraPts').textContent = cPts;
             cFood = cobraNovaComida();
-            if (cVel > 75) cVel -= 4;
+            if (cVel > 80) cVel -= 7;
         } else cSnake.pop();
         cobraDesenhar();
     }
