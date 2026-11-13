@@ -805,12 +805,11 @@
             /* Ordem no computador: anúncios, livros e depois 3 seções lado a lado */
             .ads-section   { order: 0; margin-bottom: 4px; }
             .sec-livros    { order: 1; }
-            .sec-beleza    { order: 2; grid-column: auto; }
-            .sec-sistemas  { order: 3; grid-column: auto; }
-            .sec-afiliados { order: 4; grid-column: auto; }
-            .sec-conteudo  { order: 5; grid-column: 1 / -1; }
-            .sec-videos    { order: 6; }
-            .content > footer { order: 7; text-align: center; }
+            .sec-sistemas  { order: 2; grid-column: auto; }
+            .sec-afiliados { order: 3; grid-column: auto; }
+            .sec-conteudo  { order: 4; grid-column: 1 / -1; }
+            .sec-videos    { order: 5; }
+            .content > footer { order: 6; text-align: center; }
 
             /* Vídeos: 3 por linha no computador */
             .videos-grid {
@@ -853,8 +852,8 @@
             .sec { scroll-margin-top: 24px; }
             .card-container { padding: 20px; margin-bottom: 20px; }
 
-            /* Cards das 3 seções menores: um pouco mais compactos */
-            .sec-beleza .card-thumb,
+            /* Cards das seções menores: um pouco mais compactos */
+            .sec-afiliados .card-thumb,
             .sec-sistemas .card-thumb,
             .sec-conteudo .card-thumb { width: 90px; height: 127px; }
         }
@@ -967,7 +966,6 @@
         <!-- Índice das seções (aparece só no computador) -->
         <nav class="side-index">
             <a href="#livros"><span>📚</span> Livros &amp; Apostilas</a>
-            <a href="#beleza"><span>💄</span> Beleza &amp; Consultoria</a>
             <a href="#sistemas"><span>📊</span> Sistemas &amp; Utilidades</a>
             <a href="#afiliados"><span>🛍️</span> Minhas Lojas Parceiras</a>
             <a href="#conteudo"><span>▶️</span> Conteúdo &amp; Jogos</a>
@@ -994,28 +992,6 @@
             </div>
             <div class="ads-dots" id="adsDots"></div>
         </div>
-
-        <!-- Seção: Beleza & Consultoria -->
-        <section class="sec sec-beleza" id="beleza">
-        <div class="section-title">Beleza & Consultoria</div>
-        
-        <div class="card-container">
-            <img src="capa-loja-natura.jpg" alt="Espaço Digital Natura & Avon" class="card-thumb" onclick="openModal(this.src)">
-            <div class="card-info">
-                <h3>Espaço Digital Natura & Avon</h3>
-                <p>Compre com segurança direto da minha loja virtual.</p>
-                <div class="card-buttons">
-                    <a href="https://www.minhaloja.natura.com/consultoria/francielef1009" target="_blank" class="card-btn natura">
-                        <i class="fa-solid fa-store"></i> Acessar Loja Virtual
-                    </a>
-                    <a href="https://www.instagram.com/fran.beautycare" target="_blank" rel="noopener" class="card-btn instagram">
-                        <i class="fa-brands fa-instagram"></i> Instagram
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        </section>
 
         <!-- Seção: Livros & Apostilas -->
         <section class="sec sec-livros" id="livros">
@@ -1113,6 +1089,22 @@
         <!-- Seção: Minhas Lojas Parceiras (afiliados) -->
         <section class="sec sec-afiliados" id="afiliados">
         <div class="section-title">Minhas Lojas Parceiras</div>
+
+        <div class="card-container">
+            <img src="capa-loja-natura.jpg" alt="Espaço Digital Natura & Avon" class="card-thumb" onclick="openModal(this.src)">
+            <div class="card-info">
+                <h3>Espaço Digital Natura & Avon</h3>
+                <p>Compre com segurança direto da minha loja virtual.</p>
+                <div class="card-buttons">
+                    <a href="https://www.minhaloja.natura.com/consultoria/francielef1009" target="_blank" class="card-btn natura">
+                        <i class="fa-solid fa-store"></i> Acessar Loja Virtual
+                    </a>
+                    <a href="https://www.instagram.com/fran.beautycare" target="_blank" rel="noopener" class="card-btn instagram">
+                        <i class="fa-brands fa-instagram"></i> Instagram
+                    </a>
+                </div>
+            </div>
+        </div>
 
         <div class="card-container">
             <a href="https://www.magazinevoce.com.br/magazinefranfreitas/" target="_blank" rel="noopener" aria-label="Abrir minha loja na Magalu"><img src="capa-magalu.jpg" alt="Minha loja Magalu com ofertas selecionadas" class="card-thumb"></a>
