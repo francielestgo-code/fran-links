@@ -151,6 +151,13 @@
         .opcao.errada { border-color: #ef4444; background: rgba(239, 68, 68, 0.12); }
         .opcao.errada .letra { background: #ef4444; color: #fff; }
         .opcao:disabled { cursor: default; }
+        .peca-palco {
+            background: linear-gradient(145deg, #0b1220, #111c30);
+            border: 1px solid #1e293b; border-radius: 16px;
+            padding: 18px; margin: 4px 0 18px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .peca-palco svg { width: 100%; max-width: 230px; height: auto; display: block; }
 
         .explicacao {
             margin-top: 16px;
@@ -277,10 +284,25 @@
     <section id="hub">
         <p class="hub-sub">Escolha um joguinho para se divertir. Funciona no celular e no computador! 🎮</p>
         <div class="jogos-grid">
-            <div class="jogo-card" onclick="abrirQuiz()">
+            <div class="jogo-card" onclick="abrirQuiz('tech')">
                 <span class="emoji">🧠</span>
                 <h2>Você manja de tecnologia?</h2>
                 <p>Responda o quiz e descubra o quanto você entende de tecnologia do dia a dia.</p>
+            </div>
+            <div class="jogo-card" onclick="abrirQuiz('fin')">
+                <span class="emoji">💰</span>
+                <h2>Quiz de Educação Financeira</h2>
+                <p>Regra 50-30-20, juros, poupança e orçamento. Aprenda a cuidar do seu dinheiro!</p>
+            </div>
+            <div class="jogo-card" onclick="abrirQuiz('concurso')">
+                <span class="emoji">📚</span>
+                <h2>Quiz de TI para Concursos</h2>
+                <p>Questões no estilo das bancas: redes, banco de dados, segurança e muito mais.</p>
+            </div>
+            <div class="jogo-card" onclick="abrirPecas()">
+                <span class="emoji">🖥️</span>
+                <h2>Peças do computador</h2>
+                <p>Veja a imagem da peça e acerte o nome certo. Ótimo para quem está aprendendo!</p>
             </div>
             <div class="jogo-card" onclick="abrirMemoria()">
                 <span class="emoji">🃏</span>
@@ -341,6 +363,29 @@
         </div>
     </section>
 
+    <!-- ===================== PEÇAS DO COMPUTADOR ===================== -->
+    <section id="pecas" class="hidden">
+        <div class="painel">
+            <div class="barra-topo">
+                <span id="pecasContador">Peça 1 de 10</span>
+                <button class="sair" onclick="voltarHub()"><i class="fa-solid fa-xmark"></i> Sair do jogo</button>
+            </div>
+            <div class="progresso"><div id="pecasBarra"></div></div>
+
+            <div id="pecasJogo">
+                <p class="pergunta">Qual é o nome desta peça?</p>
+                <div class="peca-palco" id="pecaPalco"></div>
+                <div class="opcoes" id="pecasOpcoes"></div>
+                <div class="explicacao hidden" id="pecasExplicacao"></div>
+                <div class="quiz-rodape">
+                    <button class="btn hidden" id="pecasProximo" onclick="pecasProxima()">Próxima <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="pecasResultado" class="resultado hidden"></div>
+        </div>
+    </section>
+
     <div class="rodape-site">
         Feito com 💙 por <a href="index.html">Fran Freitas</a>
     </div>
@@ -349,16 +394,18 @@
 <script>
     const $ = (id) => document.getElementById(id);
     function mostrarTela(id) {
-        ['hub', 'quiz', 'memoria'].forEach((t) => $(t).classList.toggle('hidden', t !== id));
+        ['hub', 'quiz', 'memoria', 'pecas'].forEach((t) => $(t).classList.toggle('hidden', t !== id));
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     function voltarHub() { pararTempo(); mostrarTela('hub'); }
+
+    function abrirPecas() { pecasIniciar(); mostrarTela('pecas'); }
 
     // ===================== QUIZ =====================
     // Banco grande de perguntas. A cada rodada são sorteadas QUIZ_TAMANHO delas,
     // em ordem aleatória e com as opções embaralhadas — assim o jogo quase nunca se repete.
     const QUIZ_TAMANHO = 10;
-    const BANCO = [
+    const BANCO_TECH = [
         { p: 'Para que serve a tecla F5 no navegador?', o: ['Atualizar a página', 'Fechar o programa', 'Aumentar o volume'], c: 0, e: 'O F5 recarrega (atualiza) a página que você está vendo.' },
         { p: 'O que significa "www" no endereço de um site?', o: ['World Wide Web', 'Windows Web World', 'World Web Wire'], c: 0, e: '"www" vem de World Wide Web, a teia mundial de páginas da internet.' },
         { p: 'Qual atalho serve para COPIAR um texto?', o: ['Ctrl + V', 'Ctrl + C', 'Ctrl + X'], c: 1, e: 'Ctrl + C copia. O Ctrl + V cola e o Ctrl + X recorta.' },
@@ -391,6 +438,115 @@
         { p: 'O que é um "navegador", como o Chrome ou o Edge?', o: ['Um programa para acessar a internet', 'Um antivírus', 'Um jogo'], c: 0, e: 'O navegador é o programa que você usa para abrir sites e acessar a internet.' }
     ];
 
+    // ---- Banco: Educação Financeira (perguntas leves do dia a dia) ----
+    const BANCO_FIN = [
+        { p: 'Na regra 50-30-20, quanto da renda vai para gastos essenciais (moradia, contas, comida)?', o: ['50%', '30%', '20%'], c: 0, e: 'Na regra 50-30-20, metade da renda (50%) é destinada às necessidades essenciais.' },
+        { p: 'Na regra 50-30-20, os 30% são destinados a quê?', o: ['Desejos e lazer', 'Só dívidas', 'Só investimentos'], c: 0, e: 'Os 30% são para desejos e lazer. Os 20% ficam para poupar e quitar dívidas.' },
+        { p: 'Na regra 50-30-20, os 20% devem ir para:', o: ['Poupança e quitar dívidas', 'Compras por impulso', 'Lazer'], c: 0, e: 'Os 20% são a parte que constrói o seu futuro: poupança, investimentos e pagar dívidas.' },
+        { p: 'O que é uma "reserva de emergência"?', o: ['Dinheiro guardado para imprevistos', 'Um empréstimo no banco', 'Um cartão de crédito extra'], c: 0, e: 'A reserva de emergência é um dinheiro guardado para imprevistos, como uma despesa inesperada.' },
+        { p: 'O que são "juros compostos"?', o: ['Juros que incidem sobre juros', 'Um tipo de imposto', 'Uma conta bancária'], c: 0, e: 'Nos juros compostos, os juros incidem sobre o valor que já acumulou juros — é o famoso "juros sobre juros".' },
+        { p: 'Qual dessas dívidas costuma cobrar os juros MAIS caros?', o: ['Rotativo do cartão de crédito', 'Financiamento de imóvel', 'Empréstimo consignado'], c: 0, e: 'O rotativo do cartão de crédito é uma das dívidas mais caras que existem. Evite pagar só o mínimo da fatura!' },
+        { p: 'Fazer um "orçamento" doméstico significa:', o: ['Planejar o que entra e o que sai', 'Pedir empréstimo', 'Gastar tudo o que ganha'], c: 0, e: 'Orçamento é planejar quanto dinheiro entra e quanto sai, para não gastar mais do que se ganha.' },
+        { p: 'Pagar apenas o "mínimo" da fatura do cartão faz com que:', o: ['O restante vire dívida com juros altos', 'Você ganhe um desconto', 'A dívida desapareça'], c: 0, e: 'Ao pagar só o mínimo, o restante entra no rotativo e passa a render juros altos contra você.' },
+        { p: 'O que significa "viver dentro do orçamento"?', o: ['Gastar no máximo o que se ganha', 'Gastar sempre mais que ganha', 'Nunca poupar nada'], c: 0, e: 'Viver dentro do orçamento é não gastar mais do que a sua renda, sobrando algo para poupar.' },
+        { p: 'Qual é um bom primeiro passo para organizar as finanças?', o: ['Anotar todos os gastos do mês', 'Fazer mais dívidas', 'Ignorar as contas'], c: 0, e: 'Anotar todos os gastos mostra para onde o dinheiro está indo — o primeiro passo para organizar tudo.' },
+        { p: 'O que é "inflação"?', o: ['O aumento geral dos preços com o tempo', 'Um tipo de investimento', 'Um imposto'], c: 0, e: 'Inflação é o aumento geral dos preços ao longo do tempo, que faz o dinheiro comprar menos.' },
+        { p: 'O que é um gasto "fixo"?', o: ['Aquele que se repete todo mês (aluguel, internet)', 'Uma compra única', 'Um presente surpresa'], c: 0, e: 'Gasto fixo é o que se repete todo mês com valor parecido, como aluguel, internet e mensalidades.' },
+        { p: 'O que é um gasto "variável"?', o: ['Aquele que muda de valor (mercado, lazer)', 'O aluguel', 'A conta de internet'], c: 0, e: 'Gasto variável muda de mês para mês, como mercado, lazer e combustível.' },
+        { p: 'Guardar um pouco de dinheiro todo mês ajuda porque:', o: ['Cria o hábito e o valor cresce com o tempo', 'Não faz diferença', 'Só vale com muito dinheiro'], c: 0, e: 'Mesmo pouco por mês cria o hábito de poupar, e com o tempo (e os juros) o valor cresce.' },
+        { p: 'Antes de uma compra grande, o ideal é:', o: ['Pesquisar preços e planejar', 'Comprar por impulso', 'Parcelar sempre no limite'], c: 0, e: 'Pesquisar preços e planejar evita dívidas e ajuda a conseguir um valor melhor.' },
+        { p: 'O que é "renda"?', o: ['O dinheiro que você recebe', 'O dinheiro que você gasta', 'As suas dívidas'], c: 0, e: 'Renda é todo dinheiro que você recebe, como salário, vendas ou benefícios.' },
+        { p: 'O que é o Tesouro Direto?', o: ['Um investimento em títulos do governo', 'Um cartão de crédito', 'Uma conta de luz'], c: 0, e: 'O Tesouro Direto é um investimento em títulos públicos do governo, considerado um dos mais seguros.' },
+        { p: 'Uma boa meta financeira é aquela que:', o: ['É clara e tem um prazo', 'É vaga e sem data', 'Depende só da sorte'], c: 0, e: 'Metas boas são claras e têm prazo, como "juntar R$ 1.000 em 6 meses".' },
+        { p: 'Por que ter várias dívidas no cartão ao mesmo tempo é arriscado?', o: ['Os juros se acumulam e a dívida cresce rápido', 'Melhora o seu limite', 'Não tem risco nenhum'], c: 0, e: 'Várias dívidas juntas somam juros sobre juros e podem crescer rápido, saindo do controle.' },
+        { p: 'O que é a poupança?', o: ['Uma aplicação simples onde você guarda e rende um pouco', 'Um tipo de cartão', 'Uma dívida'], c: 0, e: 'A poupança é uma aplicação simples e segura onde você guarda dinheiro e ele rende um pouco ao mês.' }
+    ];
+
+    // ---- Banco: TI para Concursos (nível banca, gabarito comentado) ----
+    const BANCO_CONCURSO = [
+        { p: 'No modelo OSI, qual camada é responsável pelo roteamento dos pacotes?', o: ['Camada de Rede', 'Camada de Transporte', 'Camada de Enlace'], c: 0, e: 'A camada de Rede (nível 3) cuida do endereçamento lógico (IP) e do roteamento dos pacotes.' },
+        { p: 'Quantas camadas possui o modelo OSI?', o: ['7', '5', '4'], c: 0, e: 'O modelo OSI possui 7 camadas: Física, Enlace, Rede, Transporte, Sessão, Apresentação e Aplicação.' },
+        { p: 'Qual protocolo é orientado à conexão e garante a entrega dos dados?', o: ['TCP', 'UDP', 'IP'], c: 0, e: 'O TCP é orientado à conexão e garante a entrega ordenada e confiável dos dados.' },
+        { p: 'Qual é a principal característica do protocolo UDP?', o: ['É rápido, mas não garante a entrega', 'Garante a entrega dos pacotes', 'Criptografa os dados'], c: 0, e: 'O UDP é mais rápido e sem conexão, porém não garante a entrega nem a ordem dos pacotes.' },
+        { p: 'O endereço IPv4 é composto por quantos bits?', o: ['32 bits', '64 bits', '128 bits'], c: 0, e: 'O IPv4 tem 32 bits, geralmente escritos em 4 octetos (ex.: 192.168.0.1).' },
+        { p: 'O endereço IPv6 possui quantos bits?', o: ['128 bits', '32 bits', '64 bits'], c: 0, e: 'O IPv6 usa 128 bits, ampliando enormemente a quantidade de endereços disponíveis.' },
+        { p: 'Qual protocolo traduz nomes de domínio (ex.: site.com) em endereços IP?', o: ['DNS', 'DHCP', 'FTP'], c: 0, e: 'O DNS (Domain Name System) traduz nomes de domínio em endereços IP.' },
+        { p: 'Qual protocolo atribui endereços IP automaticamente aos dispositivos da rede?', o: ['DHCP', 'DNS', 'SMTP'], c: 0, e: 'O DHCP distribui endereços IP automaticamente para os dispositivos da rede.' },
+        { p: 'Na Segurança da Informação, o princípio da INTEGRIDADE garante que:', o: ['A informação não seja alterada indevidamente', 'Apenas autorizados acessem', 'O sistema esteja sempre no ar'], c: 0, e: 'Integridade garante que a informação não seja alterada de forma indevida ou não autorizada.' },
+        { p: 'O princípio da CONFIDENCIALIDADE garante que:', o: ['Apenas pessoas autorizadas acessem a informação', 'A informação não seja alterada', 'O sistema esteja disponível'], c: 0, e: 'Confidencialidade garante que somente pessoas autorizadas tenham acesso à informação.' },
+        { p: 'O pilar da DISPONIBILIDADE, na segurança da informação, garante que:', o: ['A informação esteja acessível quando necessária', 'Os dados sejam secretos', 'Os dados não mudem'], c: 0, e: 'Disponibilidade garante que a informação e os sistemas estejam acessíveis sempre que forem necessários.' },
+        { p: 'Qual comando SQL é usado para CONSULTAR dados de uma tabela?', o: ['SELECT', 'UPDATE', 'DELETE'], c: 0, e: 'O comando SELECT recupera (consulta) dados de uma ou mais tabelas.' },
+        { p: 'Qual comando SQL ALTERA registros já existentes em uma tabela?', o: ['UPDATE', 'INSERT', 'SELECT'], c: 0, e: 'O UPDATE altera o conteúdo de registros que já existem na tabela.' },
+        { p: 'Qual comando SQL REMOVE registros de uma tabela?', o: ['DELETE', 'DROP', 'SELECT'], c: 0, e: 'O DELETE remove registros (linhas) de uma tabela. O DROP, diferente, apaga a estrutura toda.' },
+        { p: 'Em SQL, para que serve a cláusula WHERE?', o: ['Filtrar registros com uma condição', 'Ordenar os resultados', 'Agrupar registros'], c: 0, e: 'O WHERE filtra os registros por uma condição. Ordenar é ORDER BY e agrupar é GROUP BY.' },
+        { p: 'O que é uma "chave primária" (primary key) em um banco de dados?', o: ['Identifica unicamente cada registro', 'Liga duas tabelas quaisquer', 'Guarda a senha do banco'], c: 0, e: 'A chave primária identifica de forma única cada registro (linha) de uma tabela, sem repetição.' },
+        { p: 'Qual destes é um sistema operacional de código aberto (software livre)?', o: ['Linux', 'Windows', 'macOS'], c: 0, e: 'O Linux é um sistema operacional de código aberto, podendo ser usado e modificado livremente.' },
+        { p: 'No Linux, qual comando lista os arquivos de um diretório?', o: ['ls', 'cd', 'rm'], c: 0, e: 'O comando ls lista o conteúdo de um diretório. O cd troca de pasta e o rm apaga arquivos.' },
+        { p: 'Qual estrutura de dados segue o princípio FIFO (o primeiro a entrar é o primeiro a sair)?', o: ['Fila', 'Pilha', 'Árvore'], c: 0, e: 'A Fila segue o FIFO (First In, First Out). A Pilha segue o LIFO (último a entrar, primeiro a sair).' },
+        { p: 'Qual estrutura de dados segue o princípio LIFO (o último a entrar é o primeiro a sair)?', o: ['Pilha', 'Fila', 'Lista'], c: 0, e: 'A Pilha segue o LIFO (Last In, First Out), como uma pilha de pratos.' },
+        { p: 'A memória RAM é um tipo de memória:', o: ['Volátil (perde os dados ao desligar)', 'Permanente', 'Somente leitura'], c: 0, e: 'A RAM é volátil: ela perde os dados quando o computador é desligado.' },
+        { p: 'Qual componente é responsável pelo processamento, o "cérebro" do computador?', o: ['CPU (processador)', 'HD', 'Placa de vídeo'], c: 0, e: 'A CPU (Unidade Central de Processamento), ou processador, executa as instruções do computador.' },
+        { p: '1 byte corresponde a quantos bits?', o: ['8 bits', '4 bits', '16 bits'], c: 0, e: 'Um byte é formado por 8 bits.' },
+        { p: 'A LGPD (Lei nº 13.709/2018) trata principalmente de:', o: ['Proteção de dados pessoais', 'Crimes de trânsito', 'Direitos trabalhistas'], c: 0, e: 'A LGPD é a Lei Geral de Proteção de Dados Pessoais, que regula o tratamento de dados pessoais.' },
+        { p: 'Qual dispositivo interliga redes diferentes e define a melhor rota dos pacotes?', o: ['Roteador', 'Hub', 'Impressora'], c: 0, e: 'O roteador interliga redes distintas e escolhe a melhor rota para os pacotes chegarem ao destino.' },
+        { p: 'O que é "malware"?', o: ['Software malicioso', 'Um tipo de hardware', 'Um protocolo de rede'], c: 0, e: 'Malware é qualquer software malicioso, como vírus, worms, trojans e ransomwares.' },
+        { p: 'O backup "incremental" copia:', o: ['Apenas o que mudou desde o último backup', 'Todos os arquivos sempre', 'Somente o sistema operacional'], c: 0, e: 'O backup incremental copia apenas os arquivos alterados desde o último backup, economizando espaço e tempo.' },
+        { p: 'Qual protocolo é usado para o ENVIO de e-mails?', o: ['SMTP', 'HTTP', 'DNS'], c: 0, e: 'O SMTP (Simple Mail Transfer Protocol) é usado para o envio de e-mails.' },
+        { p: 'O HTTPS difere do HTTP porque:', o: ['Usa criptografia, deixando a conexão segura', 'É mais antigo', 'Só funciona no celular'], c: 0, e: 'O HTTPS adiciona criptografia (TLS/SSL) ao HTTP, protegendo os dados trocados com o site.' },
+        { p: 'Para que serve um firewall?', o: ['Filtrar e controlar o tráfego de rede', 'Aumentar a velocidade do HD', 'Limpar vírus do pen drive'], c: 0, e: 'O firewall filtra e controla o tráfego de rede, bloqueando acessos não autorizados.' }
+    ];
+
+    // ---- Configuração de cada quiz: banco de questões + chamada final (CTA) ----
+    const QUIZZES = {
+        tech: {
+            nome: 'Você manja de tecnologia?',
+            banco: BANCO_TECH,
+            tiers: [
+                { emoji: '😅', titulo: 'Tá começando!', frase: 'Todo mundo começa assim. Com umas dicas simples você vai longe!' },
+                { emoji: '👏', titulo: 'Mandou bem!', frase: 'Você já manja bastante de tecnologia. Dá pra melhorar ainda mais!' },
+                { emoji: '🤓', titulo: 'Você manja muito!', frase: 'Parabéns! Você entende de tecnologia e sabe se virar no dia a dia.' }
+            ],
+            cta: {
+                img: 'capa-tecnologia-sem-segredo.jpg', alt: 'Tecnologia Sem Segredo',
+                titulo: 'Quer dominar a tecnologia de vez?',
+                texto: 'O livro <strong>Tecnologia Sem Segredo</strong> ensina o passo a passo, sem complicação.',
+                btn: 'Conhecer o livro', link: 'https://go.hotmart.com/H108029638W'
+            }
+        },
+        fin: {
+            nome: 'Quiz de Educação Financeira',
+            banco: BANCO_FIN,
+            tiers: [
+                { emoji: '😅', titulo: 'Bora organizar!', frase: 'Todo mundo começa assim. Dá pra dominar o dinheiro com uns passos simples!' },
+                { emoji: '👏', titulo: 'No caminho certo!', frase: 'Você já entende bastante de finanças. Dá pra ir ainda além!' },
+                { emoji: '💰', titulo: 'Craque das finanças!', frase: 'Parabéns! Você sabe cuidar bem do seu dinheiro.' }
+            ],
+            cta: {
+                img: 'capa-painel-financeiro.jpg', alt: 'Painel Financeiro',
+                titulo: 'Quer colocar isso em prática?',
+                texto: 'O <strong>Painel Financeiro</strong> te ajuda a organizar o dinheiro, controlar gastos e poupar de verdade.',
+                btn: 'Conhecer o Painel', link: 'https://go.hotmart.com/P108150184U'
+            }
+        },
+        concurso: {
+            nome: 'Quiz de TI para Concursos',
+            banco: BANCO_CONCURSO,
+            tiers: [
+                { emoji: '📚', titulo: 'Começando os estudos!', frase: 'Concurso é treino. Com as questões certas você evolui rápido!' },
+                { emoji: '👏', titulo: 'Bom desempenho!', frase: 'Você já tem uma boa base de TI. Continue praticando!' },
+                { emoji: '🏆', titulo: 'Pronto pra prova!', frase: 'Excelente! Seu nível já é de quem passa em concurso.' }
+            ],
+            cta: {
+                img: 'capa-questoes-ti.png', alt: '+1.000 Questões de TI',
+                titulo: 'Vai prestar concurso na área de TI?',
+                texto: 'A apostila <strong>+1.000 Questões de TI</strong> traz o estilo de prova das bancas, com gabarito comentado.',
+                btn: 'Ver a apostila', link: 'https://go.hotmart.com/M87347521P'
+            }
+        }
+    };
+
+    let quizAtual = 'tech';
+
     function embaralharLista(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -399,9 +555,11 @@
         return arr;
     }
 
-    // Sorteia QUIZ_TAMANHO perguntas do banco e embaralha as opções de cada uma
+    // Sorteia QUIZ_TAMANHO perguntas do banco ativo e embaralha as opções de cada uma
     function sortearRodada() {
-        const escolhidas = embaralharLista([...BANCO]).slice(0, QUIZ_TAMANHO);
+        const banco = QUIZZES[quizAtual].banco;
+        const total = Math.min(QUIZ_TAMANHO, banco.length);
+        const escolhidas = embaralharLista([...banco]).slice(0, total);
         return escolhidas.map((q) => {
             const opts = q.o.map((texto, i) => ({ texto, certa: i === q.c }));
             embaralharLista(opts);
@@ -412,7 +570,8 @@
     let PERGUNTAS = [];
     let qAtual = 0, qAcertos = 0, qRespondeu = false;
 
-    function abrirQuiz() {
+    function abrirQuiz(tipo) {
+        if (tipo && QUIZZES[tipo]) quizAtual = tipo;
         PERGUNTAS = sortearRodada();
         qAtual = 0; qAcertos = 0;
         $('quizJogo').classList.remove('hidden');
@@ -479,39 +638,37 @@
         $('quizBarra').style.width = '100%';
         $('quizContador').textContent = 'Resultado';
 
-        let emoji, titulo, frase;
-        if (qAcertos <= 4) {
-            emoji = '😅'; titulo = 'Tá começando!';
-            frase = 'Todo mundo começa assim. Com umas dicas simples você vai longe!';
-        } else if (qAcertos <= 7) {
-            emoji = '👏'; titulo = 'Mandou bem!';
-            frase = 'Você já manja bastante de tecnologia. Dá pra melhorar ainda mais!';
-        } else {
-            emoji = '🤓'; titulo = 'Você manja muito!';
-            frase = 'Parabéns! Você entende de tecnologia e sabe se virar no dia a dia.';
-        }
+        const cfg = QUIZZES[quizAtual];
+        const total = PERGUNTAS.length;
+        // Faixas proporcionais ao total de perguntas (até ~40% / até ~75% / acima)
+        let nivel;
+        if (qAcertos <= total * 0.4) nivel = cfg.tiers[0];
+        else if (qAcertos <= total * 0.75) nivel = cfg.tiers[1];
+        else nivel = cfg.tiers[2];
 
-        const textoShare = `Eu acertei ${qAcertos} de ${PERGUNTAS.length} no quiz "Você manja de tecnologia?" da Fran Freitas! 🤓 Faça você também:`;
+        const textoShare = `Eu acertei ${qAcertos} de ${total} no "${cfg.nome}" da Fran Freitas! ${nivel.emoji} Faça você também:`;
         const linkSite = 'https://franfreitas.app.br/jogos.html';
+        const cta = cfg.cta;
 
         const r = $('quizResultado');
         r.innerHTML = `
-            <span class="emoji-grande">${emoji}</span>
-            <div class="nota">Você acertou ${qAcertos} de ${PERGUNTAS.length}</div>
-            <h2>${titulo}</h2>
-            <p class="frase">${frase}</p>
+            <span class="emoji-grande">${nivel.emoji}</span>
+            <div class="nota">Você acertou ${qAcertos} de ${total}</div>
+            <h2>${nivel.titulo}</h2>
+            <p class="frase">${nivel.frase}</p>
 
             <div class="cta-livro">
-                <img src="capa-tecnologia-sem-segredo.jpg" alt="Tecnologia Sem Segredo">
+                <img src="${cta.img}" alt="${cta.alt}">
                 <div class="info">
-                    <h3>Quer dominar a tecnologia de vez?</h3>
-                    <p>O livro <strong>Tecnologia Sem Segredo</strong> ensina o passo a passo, sem complicação.</p>
-                    <a href="https://go.hotmart.com/H108029638W" target="_blank" rel="noopener" class="btn laranja"><i class="fa-solid fa-fire"></i> Conhecer o livro</a>
+                    <h3>${cta.titulo}</h3>
+                    <p>${cta.texto}</p>
+                    <a href="${cta.link}" target="_blank" rel="noopener" class="btn laranja"><i class="fa-solid fa-fire"></i> ${cta.btn}</a>
                 </div>
             </div>
 
             <div class="resultado-botoes">
                 <button class="btn" onclick="abrirQuiz()"><i class="fa-solid fa-rotate-right"></i> Jogar de novo</button>
+                <button class="btn outline" onclick="voltarHub()"><i class="fa-solid fa-gamepad"></i> Outros jogos</button>
                 <a class="btn verde" target="_blank" rel="noopener"
                    href="https://wa.me/?text=${encodeURIComponent(textoShare + ' ' + linkSite)}">
                    <i class="fa-brands fa-whatsapp"></i> Compartilhar
@@ -627,6 +784,137 @@
                 <button class="btn" onclick="reiniciarMemoria()"><i class="fa-solid fa-rotate-right"></i> Jogar de novo</button>
                 <button class="btn outline" onclick="voltarHub()"><i class="fa-solid fa-gamepad"></i> Outros jogos</button>
             </div>`;
+        r.classList.remove('hidden');
+    }
+
+    // ===================== PEÇAS DO COMPUTADOR =====================
+    // Ilustrações desenhadas em SVG (sem depender de fotos externas).
+    const A = '#38bdf8', D = '#1e293b', G = '#334155', P = '#0b1220', GP = '#64748b';
+    function svgTeclado() {
+        let k = '';
+        for (let r = 0; r < 3; r++) for (let c = 0; c < 8; c++)
+            k += `<rect x="${30 + c * 17}" y="${55 + r * 17}" width="13" height="13" rx="3" fill="${G}"/>`;
+        return `<svg viewBox="0 0 200 160"><rect x="18" y="45" width="164" height="78" rx="10" fill="${D}" stroke="${A}" stroke-width="3"/>${k}<rect x="60" y="107" width="80" height="11" rx="4" fill="${G}"/></svg>`;
+    }
+    function svgRam() {
+        let chips = '';
+        for (let i = 0; i < 5; i++) chips += `<rect x="${34 + i * 27}" y="60" width="20" height="18" rx="2" fill="${P}"/>`;
+        return `<svg viewBox="0 0 200 160"><rect x="24" y="52" width="152" height="42" rx="4" fill="#166534" stroke="${A}" stroke-width="2"/>${chips}<rect x="24" y="94" width="152" height="9" fill="#eab308"/><rect x="96" y="94" width="8" height="9" fill="${P}"/></svg>`;
+    }
+    const PECAS = [
+        { nome: 'Mouse', e: 'controla o cursor (setinha) na tela e faz os cliques.', svg: `<svg viewBox="0 0 200 160"><rect x="62" y="20" width="76" height="120" rx="38" fill="${D}" stroke="${A}" stroke-width="3"/><line x1="100" y1="22" x2="100" y2="70" stroke="${A}" stroke-width="3"/><rect x="94" y="34" width="12" height="22" rx="6" fill="${A}"/></svg>` },
+        { nome: 'Teclado', e: 'serve para digitar letras, números e comandos.', svg: svgTeclado() },
+        { nome: 'Monitor', e: 'é a tela onde aparecem as imagens do computador.', svg: `<svg viewBox="0 0 200 160"><rect x="25" y="25" width="150" height="95" rx="8" fill="${D}" stroke="${A}" stroke-width="3"/><rect x="34" y="34" width="132" height="77" rx="3" fill="${P}"/><rect x="88" y="120" width="24" height="16" fill="${G}"/><rect x="70" y="134" width="60" height="9" rx="4" fill="${G}"/></svg>` },
+        { nome: 'Gabinete', e: 'é a "caixa" (torre) que guarda as peças internas do computador.', svg: `<svg viewBox="0 0 200 160"><rect x="68" y="18" width="64" height="124" rx="8" fill="${D}" stroke="${A}" stroke-width="3"/><circle cx="100" cy="36" r="5" fill="${A}"/><rect x="80" y="52" width="40" height="6" rx="3" fill="${G}"/><rect x="80" y="64" width="40" height="6" rx="3" fill="${G}"/><rect x="80" y="82" width="40" height="30" rx="3" fill="${P}" stroke="${G}" stroke-width="2"/></svg>` },
+        { nome: 'Pen drive', e: 'guarda e transporta arquivos; é ligado na entrada USB.', svg: `<svg viewBox="0 0 200 160"><rect x="40" y="66" width="90" height="28" rx="6" fill="${D}" stroke="${A}" stroke-width="3"/><rect x="130" y="72" width="30" height="16" fill="#cbd5e1"/><rect x="134" y="75" width="10" height="4" fill="${GP}"/><rect x="134" y="81" width="10" height="4" fill="${GP}"/><circle cx="58" cy="80" r="4" fill="${A}"/></svg>` },
+        { nome: 'Memória RAM', e: 'é a memória que o computador usa enquanto trabalha; quanto mais, mais tarefas ao mesmo tempo.', svg: svgRam() },
+        { nome: 'Placa-mãe', e: 'é a placa principal onde todas as outras peças se conectam.', svg: `<svg viewBox="0 0 200 160"><rect x="20" y="20" width="160" height="120" rx="6" fill="#166534" stroke="${A}" stroke-width="3"/><rect x="34" y="34" width="38" height="38" rx="3" fill="${D}"/><rect x="92" y="38" width="76" height="7" rx="2" fill="${P}"/><rect x="92" y="52" width="76" height="7" rx="2" fill="${P}"/><rect x="92" y="66" width="76" height="7" rx="2" fill="${P}"/><circle cx="52" cy="112" r="11" fill="${G}"/><rect x="92" y="96" width="60" height="30" rx="3" fill="${D}"/></svg>` },
+        { nome: 'Processador', e: 'é o "cérebro" do computador, que faz os cálculos e processa tudo.', svg: `<svg viewBox="0 0 200 160"><rect x="55" y="40" width="90" height="90" rx="6" fill="${G}" stroke="${A}" stroke-width="3"/><rect x="72" y="57" width="56" height="56" rx="4" fill="${D}"/><rect x="86" y="71" width="28" height="28" rx="2" fill="${A}" opacity="0.5"/></svg>` },
+        { nome: 'Fonte de energia', e: 'leva energia elétrica para todas as peças do computador.', svg: `<svg viewBox="0 0 200 160"><rect x="35" y="45" width="130" height="80" rx="8" fill="${D}" stroke="${A}" stroke-width="3"/><circle cx="98" cy="85" r="30" fill="none" stroke="${GP}" stroke-width="3"/><line x1="98" y1="85" x2="98" y2="57" stroke="${GP}" stroke-width="3"/><line x1="98" y1="85" x2="122" y2="99" stroke="${GP}" stroke-width="3"/><line x1="98" y1="85" x2="74" y2="99" stroke="${GP}" stroke-width="3"/><rect x="140" y="60" width="16" height="12" rx="2" fill="${G}"/></svg>` },
+        { nome: 'HD (disco rígido)', e: 'guarda seus arquivos de forma permanente, mesmo com o PC desligado.', svg: `<svg viewBox="0 0 200 160"><rect x="35" y="35" width="130" height="90" rx="6" fill="${G}" stroke="${A}" stroke-width="3"/><circle cx="92" cy="80" r="34" fill="${P}" stroke="${GP}" stroke-width="2"/><circle cx="92" cy="80" r="7" fill="${GP}"/><rect x="120" y="48" width="36" height="9" rx="2" fill="${D}"/></svg>` },
+        { nome: 'Webcam', e: 'é a câmera usada para videochamadas e gravações.', svg: `<svg viewBox="0 0 200 160"><circle cx="100" cy="72" r="42" fill="${D}" stroke="${A}" stroke-width="3"/><circle cx="100" cy="72" r="22" fill="${P}"/><circle cx="100" cy="72" r="9" fill="${A}"/><rect x="70" y="110" width="60" height="14" rx="6" fill="${G}"/></svg>` },
+        { nome: 'Impressora', e: 'imprime no papel os documentos e fotos do computador.', svg: `<svg viewBox="0 0 200 160"><rect x="65" y="36" width="70" height="36" fill="#cbd5e1"/><rect x="40" y="68" width="120" height="55" rx="8" fill="${D}" stroke="${A}" stroke-width="3"/><rect x="60" y="92" width="80" height="22" rx="3" fill="${P}"/><circle cx="150" cy="82" r="4" fill="${A}"/></svg>` },
+        { nome: 'Caixa de som', e: 'reproduz os sons e músicas do computador.', svg: `<svg viewBox="0 0 200 160"><rect x="65" y="18" width="70" height="124" rx="10" fill="${D}" stroke="${A}" stroke-width="3"/><circle cx="100" cy="98" r="24" fill="${P}" stroke="${GP}" stroke-width="2"/><circle cx="100" cy="98" r="8" fill="${GP}"/><circle cx="100" cy="46" r="10" fill="${P}" stroke="${GP}" stroke-width="2"/></svg>` },
+        { nome: 'Roteador', e: 'distribui a internet (Wi-Fi) para os aparelhos da casa.', svg: `<svg viewBox="0 0 200 160"><rect x="40" y="82" width="120" height="45" rx="8" fill="${D}" stroke="${A}" stroke-width="3"/><line x1="70" y1="82" x2="60" y2="38" stroke="${GP}" stroke-width="4"/><circle cx="60" cy="36" r="5" fill="${A}"/><line x1="130" y1="82" x2="140" y2="38" stroke="${GP}" stroke-width="4"/><circle cx="140" cy="36" r="5" fill="${A}"/><circle cx="70" cy="105" r="4" fill="#22c55e"/><circle cx="88" cy="105" r="4" fill="#22c55e"/><circle cx="106" cy="105" r="4" fill="#eab308"/></svg>` }
+    ];
+    const PECAS_TAMANHO = 10;
+    let pecasRodada = [], pAtual = 0, pAcertos = 0, pRespondeu = false, pecaCerta = 0, pecaNome = '', pecaExpl = '';
+
+    function pecasIniciar() {
+        pecasRodada = embaralharLista([...PECAS]).slice(0, Math.min(PECAS_TAMANHO, PECAS.length));
+        pAtual = 0; pAcertos = 0;
+        $('pecasJogo').classList.remove('hidden');
+        $('pecasResultado').classList.add('hidden');
+        pecasRender();
+    }
+
+    function pecasRender() {
+        pRespondeu = false;
+        const item = pecasRodada[pAtual];
+        $('pecasContador').textContent = `Peça ${pAtual + 1} de ${pecasRodada.length}`;
+        $('pecasBarra').style.width = (pAtual / pecasRodada.length * 100) + '%';
+        $('pecaPalco').innerHTML = item.svg;
+        $('pecasExplicacao').classList.add('hidden');
+        $('pecasProximo').classList.add('hidden');
+
+        const outros = embaralharLista(PECAS.filter((x) => x.nome !== item.nome)).slice(0, 2).map((x) => x.nome);
+        const opcoes = embaralharLista([item.nome, ...outros]);
+        pecaCerta = opcoes.indexOf(item.nome);
+        pecaNome = item.nome; pecaExpl = item.e;
+
+        const box = $('pecasOpcoes');
+        box.innerHTML = '';
+        const letras = ['A', 'B', 'C'];
+        opcoes.forEach((nome, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'opcao';
+            btn.innerHTML = `<span class="letra">${letras[i]}</span> <span>${nome}</span>`;
+            btn.onclick = () => pecasResponder(i, btn);
+            box.appendChild(btn);
+        });
+    }
+
+    function pecasResponder(i, btn) {
+        if (pRespondeu) return;
+        pRespondeu = true;
+        const botoes = $('pecasOpcoes').querySelectorAll('.opcao');
+        botoes.forEach((b, idx) => { b.disabled = true; if (idx === pecaCerta) b.classList.add('certa'); });
+        if (i === pecaCerta) pAcertos++;
+        else btn.classList.add('errada');
+        const exp = $('pecasExplicacao');
+        exp.innerHTML = `<strong>${pecaNome}</strong>: ${pecaExpl}`;
+        exp.classList.remove('hidden');
+        $('pecasProximo').classList.remove('hidden');
+        $('pecasProximo').innerHTML = (pAtual === pecasRodada.length - 1)
+            ? 'Ver resultado <i class="fa-solid fa-flag-checkered"></i>'
+            : 'Próxima <i class="fa-solid fa-arrow-right"></i>';
+    }
+
+    function pecasProxima() {
+        pAtual++;
+        if (pAtual < pecasRodada.length) pecasRender();
+        else pecasResultado();
+    }
+
+    function pecasResultado() {
+        $('pecasJogo').classList.add('hidden');
+        $('pecasBarra').style.width = '100%';
+        $('pecasContador').textContent = 'Resultado';
+        const total = pecasRodada.length;
+        let emoji, titulo, frase;
+        if (pAcertos <= total * 0.4) { emoji = '😅'; titulo = 'Tá aprendendo!'; frase = 'As peças ficam fáceis com a prática. Tente mais uma vez!'; }
+        else if (pAcertos <= total * 0.75) { emoji = '👏'; titulo = 'Muito bem!'; frase = 'Você já reconhece boa parte das peças do computador!'; }
+        else { emoji = '🖥️'; titulo = 'Expert em hardware!'; frase = 'Parabéns! Você conhece bem as peças do computador.'; }
+
+        const textoShare = `Eu acertei ${pAcertos} de ${total} no jogo "Peças do Computador" da Fran Freitas! ${emoji} Jogue também:`;
+        const linkSite = 'https://franfreitas.app.br/jogos.html';
+        const cta = QUIZZES.tech.cta;
+
+        const r = $('pecasResultado');
+        r.innerHTML = `
+            <span class="emoji-grande">${emoji}</span>
+            <div class="nota">Você acertou ${pAcertos} de ${total}</div>
+            <h2>${titulo}</h2>
+            <p class="frase">${frase}</p>
+
+            <div class="cta-livro">
+                <img src="${cta.img}" alt="${cta.alt}">
+                <div class="info">
+                    <h3>Quer entender o computador por dentro?</h3>
+                    <p>O livro <strong>Tecnologia Sem Segredo</strong> explica as peças e o uso do PC, sem complicação.</p>
+                    <a href="${cta.link}" target="_blank" rel="noopener" class="btn laranja"><i class="fa-solid fa-fire"></i> ${cta.btn}</a>
+                </div>
+            </div>
+
+            <div class="resultado-botoes">
+                <button class="btn" onclick="pecasIniciar()"><i class="fa-solid fa-rotate-right"></i> Jogar de novo</button>
+                <button class="btn outline" onclick="voltarHub()"><i class="fa-solid fa-gamepad"></i> Outros jogos</button>
+                <a class="btn verde" target="_blank" rel="noopener"
+                   href="https://wa.me/?text=${encodeURIComponent(textoShare + ' ' + linkSite)}">
+                   <i class="fa-brands fa-whatsapp"></i> Compartilhar
+                </a>
+            </div>
+        `;
         r.classList.remove('hidden');
     }
 </script>
