@@ -1173,7 +1173,7 @@
     function blocosIniciar() {
         bCtx = $('blocosCanvas').getContext('2d');
         bBoard = Array.from({ length: B_R }, () => Array(B_C).fill(0));
-        bPts = 0; bLin = 0; bVel = 620;
+        bPts = 0; bLin = 0; bVel = 820;
         try { bHi = +localStorage.getItem('fran_blocos_hi') || 0; } catch (e) { bHi = 0; }
         $('blocosPts').textContent = 0; $('blocosLin').textContent = 0; $('blocosHi').textContent = bHi;
         $('blocosResultado').classList.add('hidden');
@@ -1247,7 +1247,7 @@
             bLin += limpas;
             bPts += [0, 100, 300, 500, 800][limpas];
             $('blocosPts').textContent = bPts; $('blocosLin').textContent = bLin;
-            bVel = Math.max(150, 620 - Math.floor(bLin / 2) * 40);
+            bVel = Math.max(280, 820 - Math.floor(bLin / 3) * 45);
         }
         blocosNova();
     }
