@@ -421,6 +421,10 @@
             background: #8b5cf6;
         }
 
+        .card-btn.magalu {
+            background: #0ea5e9;
+        }
+
         .card-btn:hover {
             opacity: 0.9;
         }
@@ -803,9 +807,10 @@
             .sec-livros    { order: 1; }
             .sec-beleza    { order: 2; grid-column: auto; }
             .sec-sistemas  { order: 3; grid-column: auto; }
-            .sec-conteudo  { order: 4; grid-column: 1 / -1; }
-            .sec-videos    { order: 5; }
-            .content > footer { order: 6; text-align: center; }
+            .sec-afiliados { order: 4; grid-column: auto; }
+            .sec-conteudo  { order: 5; grid-column: 1 / -1; }
+            .sec-videos    { order: 6; }
+            .content > footer { order: 7; text-align: center; }
 
             /* Vídeos: 3 por linha no computador */
             .videos-grid {
@@ -964,6 +969,7 @@
             <a href="#livros"><span>📚</span> Livros &amp; Apostilas</a>
             <a href="#beleza"><span>💄</span> Beleza &amp; Consultoria</a>
             <a href="#sistemas"><span>📊</span> Sistemas &amp; Utilidades</a>
+            <a href="#afiliados"><span>🛍️</span> Minhas Lojas Parceiras</a>
             <a href="#conteudo"><span>▶️</span> Conteúdo &amp; Jogos</a>
             <a href="#videos" id="linkVideos" style="display: none;"><span>🎬</span> Vídeos em destaque</a>
             <a href="jogos.html"><span>🎮</span> Jogos Educativos da Fran</a>
@@ -1101,6 +1107,33 @@
                 </div>
             </div>
         </div>
+
+        </section>
+
+        <!-- Seção: Minhas Lojas Parceiras (afiliados) -->
+        <section class="sec sec-afiliados" id="afiliados">
+        <div class="section-title">Minhas Lojas Parceiras</div>
+
+        <div class="card-container">
+            <a href="https://www.magazinevoce.com.br/magazinefranfreitas/" target="_blank" rel="noopener" aria-label="Abrir minha loja na Magalu"><img src="capa-magalu.jpg" alt="Minha loja Magalu com ofertas selecionadas" class="card-thumb"></a>
+            <div class="card-info">
+                <h3>Minha Loja Magalu</h3>
+                <p>Produtos que eu recomendo com preços da Magalu. Comprando pela minha loja você me ajuda e paga o mesmo valor! 💛</p>
+                <div class="card-buttons">
+                    <a href="https://www.magazinevoce.com.br/magazinefranfreitas/" target="_blank" rel="noopener" class="card-btn magalu">
+                        <i class="fa-solid fa-bag-shopping"></i> Ver ofertas na Magalu
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!--
+          COMO ADICIONAR MAIS LOJAS OU PRODUTOS (Shopee, Shein, Amazon...):
+          copie o bloco <div class="card-container">...</div> acima e troque:
+          - o link (href) pelo seu link de afiliado
+          - a imagem (src) pela foto do produto/loja
+          - o título <h3> e a descrição <p>
+        -->
 
         </section>
 
