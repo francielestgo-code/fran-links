@@ -793,18 +793,16 @@
             .side-index a:hover { background: rgba(56, 189, 248, 0.12); color: #f8fafc; }
 
             /* Conteúdo à direita */
-            /* Layout em mosaico: preenche os espaços sem deixar buracos */
-            .content {
-                column-count: 2;
+            .content { text-align: left; }
+            .ads-section { margin-bottom: 4px; }
+            /* Duas colunas alinhadas: começam na mesma linha */
+            .mid-cols {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
                 column-gap: 20px;
-                text-align: left;
+                align-items: start;
             }
-            .content > * { break-inside: avoid; }
-            /* Estas seções ocupam a largura toda */
-            .ads-section      { margin-bottom: 4px; column-span: all; }
-            .sec-livros       { column-span: all; }
-            .sec-videos       { column-span: all; }
-            .content > footer { text-align: center; column-span: all; }
+            .content > footer { text-align: center; }
 
             /* Vídeos: 3 por linha no computador */
             .videos-grid {
@@ -1057,6 +1055,10 @@
 
         </section>
 
+        <!-- ===== Colunas: esquerda (Sistemas + Conteúdo) | direita (Lojas Parceiras) ===== -->
+        <div class="mid-cols">
+        <div class="mid-col">
+
         <!-- Seção: Sistemas & Ferramentas -->
         <section class="sec sec-sistemas" id="sistemas">
         <div class="section-title">Sistemas & Utilidades</div>
@@ -1109,6 +1111,9 @@
 
         </section>
 
+        </div><!-- fim coluna esquerda -->
+        <div class="mid-col">
+
         <!-- Seção: Minhas Lojas Parceiras (afiliados) -->
         <section class="sec sec-afiliados" id="afiliados">
         <div class="section-title">Minhas Lojas Parceiras</div>
@@ -1151,6 +1156,9 @@
         -->
 
         </section>
+
+        </div><!-- fim coluna direita -->
+        </div><!-- fim mid-cols -->
 
         <!-- Seção: Vídeos em destaque (gerenciados pelo painel /admin.html) -->
         <section class="sec sec-videos" id="videos" style="display: none;">
