@@ -269,7 +269,7 @@
 <div class="wrap">
 
     <div class="topo">
-        <h1><i class="fa-solid fa-gamepad"></i> Jogos da Fran</h1>
+        <h1><i class="fa-solid fa-gamepad"></i> Jogos Educativos da Fran</h1>
         <a href="index.html" class="voltar"><i class="fa-solid fa-arrow-left"></i> Voltar ao site</a>
     </div>
 
@@ -355,7 +355,10 @@
     function voltarHub() { pararTempo(); mostrarTela('hub'); }
 
     // ===================== QUIZ =====================
-    const PERGUNTAS = [
+    // Banco grande de perguntas. A cada rodada são sorteadas QUIZ_TAMANHO delas,
+    // em ordem aleatória e com as opções embaralhadas — assim o jogo quase nunca se repete.
+    const QUIZ_TAMANHO = 10;
+    const BANCO = [
         { p: 'Para que serve a tecla F5 no navegador?', o: ['Atualizar a página', 'Fechar o programa', 'Aumentar o volume'], c: 0, e: 'O F5 recarrega (atualiza) a página que você está vendo.' },
         { p: 'O que significa "www" no endereço de um site?', o: ['World Wide Web', 'Windows Web World', 'World Web Wire'], c: 0, e: '"www" vem de World Wide Web, a teia mundial de páginas da internet.' },
         { p: 'Qual atalho serve para COPIAR um texto?', o: ['Ctrl + V', 'Ctrl + C', 'Ctrl + X'], c: 1, e: 'Ctrl + C copia. O Ctrl + V cola e o Ctrl + X recorta.' },
@@ -365,12 +368,52 @@
         { p: 'O que significa o cadeado 🔒 na barra de endereço?', o: ['O site está travado', 'A conexão é segura', 'O site é pago'], c: 1, e: 'O cadeado mostra que a conexão com o site é protegida (https).' },
         { p: 'Qual atalho DESFAZ a última ação?', o: ['Ctrl + Z', 'Ctrl + P', 'Ctrl + S'], c: 0, e: 'Ctrl + Z desfaz. É o melhor amigo de quem errou algo sem querer!' },
         { p: 'O que é um "cookie" no navegador?', o: ['Um biscoito virtual', 'Um arquivo que guarda dados do site', 'Um tipo de vírus'], c: 1, e: 'Cookies são pequenos arquivos que guardam informações, como o seu login, para o site te reconhecer.' },
-        { p: 'O que significa "Wi-Fi"?', o: ['Internet sem fio', 'Um tipo de cabo', 'Uma marca de celular'], c: 0, e: 'Wi-Fi é a conexão de internet sem fio, por ondas de rádio.' }
+        { p: 'O que significa "Wi-Fi"?', o: ['Internet sem fio', 'Um tipo de cabo', 'Uma marca de celular'], c: 0, e: 'Wi-Fi é a conexão de internet sem fio, por ondas de rádio.' },
+        { p: 'O que significa "URL"?', o: ['O endereço de um site', 'Um tipo de vírus', 'Um programa de e-mail'], c: 0, e: 'A URL é o endereço de um site, como www.franfreitas.app.br.' },
+        { p: 'Para que serve a tecla "Print Screen" (PrtSc)?', o: ['Tirar uma foto da tela', 'Desligar o PC', 'Imprimir um papel'], c: 0, e: 'O Print Screen captura uma imagem (print) de tudo o que está na tela.' },
+        { p: 'O que significa "download"?', o: ['Baixar algo da internet', 'Enviar um e-mail', 'Apagar arquivos'], c: 0, e: 'Download é baixar um arquivo da internet para o seu aparelho.' },
+        { p: 'E o que significa "upload"?', o: ['Enviar algo para a internet', 'Baixar um arquivo', 'Reiniciar o PC'], c: 0, e: 'Upload é o contrário de download: é enviar um arquivo seu para a internet.' },
+        { p: 'Para que serve o atalho Ctrl + V?', o: ['Colar', 'Copiar', 'Salvar'], c: 0, e: 'Ctrl + V cola o que você copiou antes com Ctrl + C.' },
+        { p: 'O que é "hardware"?', o: ['A parte física do computador', 'Os programas instalados', 'A internet'], c: 0, e: 'Hardware é a parte física: teclado, tela, mouse, peças... tudo o que você pode tocar.' },
+        { p: 'O que é "software"?', o: ['Os programas e aplicativos', 'As peças do computador', 'Os cabos'], c: 0, e: 'Software são os programas e aplicativos, a parte que não dá para tocar.' },
+        { p: 'Para que serve a tecla "Caps Lock"?', o: ['Escrever tudo em MAIÚSCULAS', 'Apagar o texto', 'Salvar o arquivo'], c: 0, e: 'Com o Caps Lock ligado, tudo o que você digitar sai em letras maiúsculas.' },
+        { p: 'O que é um "QR Code"?', o: ['Um código quadrado lido pela câmera', 'Uma senha secreta', 'Um tipo de vírus'], c: 0, e: 'O QR Code é aquele quadradinho que você aponta a câmera para abrir um site ou pagar um Pix.' },
+        { p: 'O que significa "PDF"?', o: ['Um formato de documento', 'Um tipo de foto', 'Um jogo'], c: 0, e: 'PDF é um formato de documento que abre igual em qualquer aparelho.' },
+        { p: 'Para que serve um "antivírus"?', o: ['Proteger o computador de ameaças', 'Deixar o PC mais bonito', 'Criar sites'], c: 0, e: 'O antivírus protege o seu aparelho contra vírus e programas perigosos.' },
+        { p: 'O que é "spam"?', o: ['Mensagens indesejadas', 'Um programa de fotos', 'Um tipo de Wi-Fi'], c: 0, e: 'Spam são aquelas mensagens e e-mails indesejados, geralmente de propaganda ou golpe.' },
+        { p: 'O que significa fazer "login"?', o: ['Entrar na conta com usuário e senha', 'Desligar o aparelho', 'Imprimir um documento'], c: 0, e: 'Login é entrar na sua conta digitando o usuário e a senha.' },
+        { p: 'Para que serve um "backup"?', o: ['Guardar uma cópia de segurança dos arquivos', 'Deixar o PC mais rápido', 'Acessar um site'], c: 0, e: 'Backup é uma cópia de segurança. Se algo der errado, você não perde seus arquivos.' },
+        { p: 'O que significa o "@" no e-mail?', o: ['Separa o nome do usuário e o provedor', 'É só um enfeite', 'Indica que é urgente'], c: 0, e: 'No e-mail, o @ separa o seu nome do provedor, como em nome@gmail.com.' },
+        { p: 'O que é a "memória RAM"?', o: ['A memória que o PC usa enquanto trabalha', 'O botão de ligar', 'A tela do computador'], c: 0, e: 'A memória RAM é usada enquanto o computador trabalha. Quanto mais, mais coisas ele faz ao mesmo tempo.' },
+        { p: 'Para que serve o "modo escuro" (dark mode)?', o: ['Deixar o fundo escuro e cansar menos a vista', 'Desligar a internet', 'Aumentar o volume'], c: 0, e: 'O modo escuro deixa o fundo da tela escuro, o que cansa menos os olhos, principalmente à noite.' },
+        { p: 'O que significa "GB" (gigabyte)?', o: ['Uma medida de espaço/armazenamento', 'A velocidade do mouse', 'Uma marca de celular'], c: 0, e: 'O gigabyte (GB) mede o espaço de armazenamento ou a memória, como "64 GB de espaço".' },
+        { p: 'O que faz a tecla "Esc"?', o: ['Cancela ou fecha o que está aberto', 'Aumenta o brilho', 'Salva o arquivo'], c: 0, e: 'A tecla Esc (de "escape") cancela uma ação ou fecha uma janela.' },
+        { p: 'O que é um "navegador", como o Chrome ou o Edge?', o: ['Um programa para acessar a internet', 'Um antivírus', 'Um jogo'], c: 0, e: 'O navegador é o programa que você usa para abrir sites e acessar a internet.' }
     ];
 
+    function embaralharLista(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // Sorteia QUIZ_TAMANHO perguntas do banco e embaralha as opções de cada uma
+    function sortearRodada() {
+        const escolhidas = embaralharLista([...BANCO]).slice(0, QUIZ_TAMANHO);
+        return escolhidas.map((q) => {
+            const opts = q.o.map((texto, i) => ({ texto, certa: i === q.c }));
+            embaralharLista(opts);
+            return { p: q.p, o: opts.map((x) => x.texto), c: opts.findIndex((x) => x.certa), e: q.e };
+        });
+    }
+
+    let PERGUNTAS = [];
     let qAtual = 0, qAcertos = 0, qRespondeu = false;
 
     function abrirQuiz() {
+        PERGUNTAS = sortearRodada();
         qAtual = 0; qAcertos = 0;
         $('quizJogo').classList.remove('hidden');
         $('quizResultado').classList.add('hidden');
