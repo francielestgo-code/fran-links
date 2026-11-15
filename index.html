@@ -425,6 +425,17 @@
             background: #0ea5e9;
         }
 
+        .card-btn.apostila {
+            background: #16a34a;
+        }
+        .card-btn.apostila:hover { background: #15803d; }
+
+        /* Destaque sutil no card de apostilas */
+        .destaque-apostila {
+            border: 1px solid rgba(250, 204, 21, 0.45);
+            box-shadow: 0 0 18px rgba(250, 204, 21, 0.12);
+        }
+
         .card-btn:hover {
             opacity: 0.9;
         }
@@ -509,6 +520,97 @@
         .close-modal-btn:hover {
             color: #f8fafc;
         }
+
+        /* ===== FORMULÁRIO DE APOSTILA ===== */
+        .form-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            inset: 0;
+            background-color: rgba(15, 23, 42, 0.92);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .form-field { margin-bottom: 14px; }
+        .form-field label {
+            display: block;
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .form-field input,
+        .form-field textarea {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 11px 13px;
+            color: #f1f5f9;
+            font-size: 0.92rem;
+            font-family: inherit;
+        }
+        .form-field input:focus,
+        .form-field textarea:focus { outline: none; border-color: #38bdf8; }
+        .disc-add { display: flex; gap: 8px; }
+        .disc-add button {
+            flex-shrink: 0;
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            border-radius: 10px;
+            padding: 0 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .disc-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .disc-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #e2e8f0;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+        .disc-chip button {
+            background: none; border: none; color: #94a3b8;
+            cursor: pointer; font-size: 1rem; line-height: 1; padding: 0;
+        }
+        .disc-chip button:hover { color: #f87171; }
+        .apostila-total {
+            background: rgba(22, 163, 74, 0.14);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin: 16px 0;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+        .apostila-total b { color: #4ade80; font-size: 1.15rem; }
+        .apostila-erro { color: #f87171; font-size: 0.82rem; margin: 6px 0 0; display: none; }
+        .btn-enviar-wpp {
+            width: 100%;
+            background: #25D366;
+            color: #0b3d1e;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 6px;
+        }
+        .btn-enviar-wpp:hover { background: #1fb457; }
 
         /* ===== VÍDEOS EM DESTAQUE ===== */
         .videos-grid {
@@ -984,7 +1086,21 @@
         <!-- Seção: Livros & Apostilas -->
         <section class="sec sec-livros" id="livros">
         <div class="section-title">Livros & Apostilas</div>
-        
+
+        <!-- Apostila personalizada (venda direta pelo WhatsApp) -->
+        <div class="card-container destaque-apostila">
+            <img src="capa-apostila-personalizada.jpg" alt="Apostilas personalizadas por disciplina" class="card-thumb" onclick="openModal(this.src)">
+            <div class="card-info">
+                <h3>Apostilas Personalizadas por Disciplina</h3>
+                <p>Feitas sob medida para a sua banca: macetes, o que mais cai, pegadinhas e exercícios de fixação. <strong>R$ 15,00 por disciplina</strong>.</p>
+                <div class="card-buttons">
+                    <button type="button" class="card-btn apostila" onclick="abrirApostila()">
+                        <i class="fa-solid fa-file-pen"></i> Montar meu pedido
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Livro 1 -->
         <div class="card-container">
             <img src="capa-tecnologia-sem-segredo.jpg" alt="Capa Livro Tecnologia Sem Segredo" class="card-thumb" onclick="openModal(this.src)">
@@ -1203,6 +1319,51 @@
         </div>
     </div>
 
+    <!-- Janela Modal: Pedido de Apostila Personalizada -->
+    <div id="apostilaModal" class="form-modal">
+        <div class="about-content-box">
+            <button class="close-modal-btn" onclick="fecharApostila()">&times;</button>
+            <h2><i class="fa-solid fa-file-pen"></i> Pedido de Apostila</h2>
+            <p style="font-size:0.88rem;">Apostilas feitas sob medida para a sua banca, com macetes, o que mais cai, pegadinhas e exercícios de fixação. <strong>R$ 15,00 por disciplina.</strong></p>
+
+            <div class="form-field">
+                <label for="apNome">Nome completo *</label>
+                <input type="text" id="apNome" placeholder="Seu nome">
+            </div>
+            <div class="form-field">
+                <label for="apFone">WhatsApp (com DDD) *</label>
+                <input type="tel" id="apFone" placeholder="(55) 99999-9999">
+            </div>
+            <div class="form-field">
+                <label for="apBanca">Banca do concurso *</label>
+                <input type="text" id="apBanca" placeholder="Ex.: Cebraspe, FGV, FCC, IBFC...">
+            </div>
+            <div class="form-field">
+                <label for="apCargo">Cargo pretendido *</label>
+                <input type="text" id="apCargo" placeholder="Ex.: Técnico Judiciário">
+            </div>
+            <div class="form-field">
+                <label for="apDisc">Disciplinas * <span style="color:#94a3b8;font-weight:400;">(adicione uma por vez)</span></label>
+                <div class="disc-add">
+                    <input type="text" id="apDisc" placeholder="Ex.: Português" onkeydown="if(event.key==='Enter'){event.preventDefault();addDisciplina();}">
+                    <button type="button" onclick="addDisciplina()">+ Add</button>
+                </div>
+                <div class="disc-chips" id="apChips"></div>
+            </div>
+            <div class="form-field">
+                <label for="apObs">Observações (opcional)</label>
+                <textarea id="apObs" rows="2" placeholder="Algo que eu precise saber?"></textarea>
+            </div>
+
+            <div class="apostila-total" id="apTotal">Adicione as disciplinas para ver o total</div>
+            <p class="apostila-erro" id="apErro">Preencha todos os campos obrigatórios (*) e adicione pelo menos uma disciplina.</p>
+
+            <button type="button" class="btn-enviar-wpp" onclick="enviarApostila()">
+                <i class="fa-brands fa-whatsapp"></i> Enviar pedido no WhatsApp
+            </button>
+        </div>
+    </div>
+
     <!-- Script JavaScript -->
     <script>
         function openModal(imageSrc) {
@@ -1215,6 +1376,75 @@
         function closeModal() {
             const modal = document.getElementById('imageModal');
             modal.style.display = 'none';
+        }
+
+        // ===== PEDIDO DE APOSTILA PERSONALIZADA =====
+        // >>> TROQUE pelo seu número de WhatsApp: código do país (55) + DDD + número, só dígitos.
+        // Exemplo: 55 + 55 (DDD) + 999999999  =>  '5555999999999'
+        const WHATS_APOSTILAS = '5555999158167';
+        const PRECO_DISCIPLINA = 15;
+        let apDisciplinas = [];
+
+        function abrirApostila() {
+            document.getElementById('apostilaModal').style.display = 'flex';
+        }
+        function fecharApostila() {
+            document.getElementById('apostilaModal').style.display = 'none';
+        }
+        function addDisciplina() {
+            const inp = document.getElementById('apDisc');
+            const val = inp.value.trim();
+            if (!val) return;
+            apDisciplinas.push(val);
+            inp.value = '';
+            inp.focus();
+            renderDisciplinas();
+        }
+        function removeDisciplina(i) {
+            apDisciplinas.splice(i, 1);
+            renderDisciplinas();
+        }
+        function renderDisciplinas() {
+            const box = document.getElementById('apChips');
+            box.innerHTML = '';
+            apDisciplinas.forEach((d, i) => {
+                const chip = document.createElement('span');
+                chip.className = 'disc-chip';
+                chip.innerHTML = `${d} <button type="button" title="Remover" onclick="removeDisciplina(${i})">&times;</button>`;
+                box.appendChild(chip);
+            });
+            const total = document.getElementById('apTotal');
+            if (apDisciplinas.length === 0) {
+                total.innerHTML = 'Adicione as disciplinas para ver o total';
+            } else {
+                const valor = apDisciplinas.length * PRECO_DISCIPLINA;
+                total.innerHTML = `${apDisciplinas.length} disciplina(s) × R$ ${PRECO_DISCIPLINA},00 = <b>R$ ${valor},00</b>`;
+            }
+        }
+        function enviarApostila() {
+            const nome = document.getElementById('apNome').value.trim();
+            const fone = document.getElementById('apFone').value.trim();
+            const banca = document.getElementById('apBanca').value.trim();
+            const cargo = document.getElementById('apCargo').value.trim();
+            const obs = document.getElementById('apObs').value.trim();
+            const erro = document.getElementById('apErro');
+            if (!nome || !fone || !banca || !cargo || apDisciplinas.length === 0) {
+                erro.style.display = 'block';
+                return;
+            }
+            erro.style.display = 'none';
+            const total = apDisciplinas.length * PRECO_DISCIPLINA;
+            let msg = 'Olá, Fran! Quero encomendar apostilas personalizadas 📘\n\n';
+            msg += 'Nome: ' + nome + '\n';
+            msg += 'WhatsApp: ' + fone + '\n';
+            msg += 'Banca: ' + banca + '\n';
+            msg += 'Cargo pretendido: ' + cargo + '\n\n';
+            msg += 'Disciplinas (R$ ' + PRECO_DISCIPLINA + ',00 cada):\n';
+            apDisciplinas.forEach((d) => { msg += '- ' + d + '\n'; });
+            msg += '\nTotal: ' + apDisciplinas.length + ' disciplina(s) = R$ ' + total + ',00';
+            if (obs) msg += '\n\nObservações: ' + obs;
+            const url = 'https://wa.me/' + WHATS_APOSTILAS + '?text=' + encodeURIComponent(msg);
+            window.open(url, '_blank');
         }
 
         function openAboutModal() {
