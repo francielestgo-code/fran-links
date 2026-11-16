@@ -445,6 +445,66 @@
             background: #8b5cf6;
         }
 
+        /* ===== VITRINE DE PRODUTOS ===== */
+        .vitrine-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+        }
+        .vitrine-card {
+            background: #101b2e;
+            border: 1px solid #1e293b;
+            border-radius: 14px;
+            overflow: hidden;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .vitrine-card:hover { transform: translateY(-3px); border-color: #38bdf8; }
+        .vitrine-img {
+            position: relative;
+            background: #fff;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .vitrine-img img { width: 100%; height: 100%; object-fit: contain; }
+        .vitrine-loja {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            color: #e2e8f0;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 20px;
+        }
+        .vitrine-info { padding: 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+        .vitrine-info h3 {
+            font-size: 0.9rem;
+            color: #f1f5f9;
+            margin: 0;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .vitrine-preco { font-size: 1.05rem; font-weight: 700; color: #4ade80; }
+        .vitrine-btn {
+            margin-top: auto;
+            background: #38bdf8;
+            color: #0f172a;
+            text-align: center;
+            padding: 9px;
+            border-radius: 9px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
         /* Destaque sutil no card de apostilas */
         .destaque-apostila {
             border: 1px solid rgba(250, 204, 21, 0.45);
@@ -1112,6 +1172,7 @@
             <a href="#sistemas"><span>📊</span> Sistemas &amp; Utilidades</a>
             <a href="#conteudo"><span>▶️</span> Conteúdo &amp; Jogos</a>
             <a href="#afiliados"><span>🛍️</span> Minhas Lojas Parceiras</a>
+            <a href="#vitrine" id="linkVitrine" style="display: none;"><span>🛒</span> Meus Favoritos</a>
             <a href="#servicos"><span>👩‍🏫</span> Serviços &amp; Suporte</a>
             <a href="#videos" id="linkVideos" style="display: none;"><span>🎬</span> Vídeos em destaque</a>
             <a href="jogos.html"><span>🎮</span> Jogos Educativos da Fran</a>
@@ -1315,6 +1376,13 @@
 
         </div><!-- fim coluna direita -->
         </div><!-- fim mid-cols -->
+
+        <!-- Seção: Vitrine de Produtos (gerenciada pelo painel /admin.html) -->
+        <section class="sec sec-vitrine" id="vitrine" style="display: none;">
+            <div class="section-title">Meus Favoritos</div>
+            <p style="color:#94a3b8; font-size:0.85rem; margin:-6px 0 16px;">Produtos que eu recomendo nas minhas lojas parceiras. Comprando pelos meus links você me ajuda! 💛</p>
+            <div class="vitrine-grid" id="vitrineGrid"></div>
+        </section>
 
         <!-- Seção: Serviços & Suporte (largura total, 2 colunas) -->
         <section class="sec sec-servicos" id="servicos">
@@ -1985,6 +2053,78 @@
             }
 
             carregarVideos();
+        })();
+
+        // ===== VITRINE DE PRODUTOS (afiliados) =====
+        (function () {
+            const secao = document.getElementById('vitrine');
+            const grid = document.getElementById('vitrineGrid');
+            const link = document.getElementById('linkVitrine');
+            if (!secao || !grid) return;
+
+            function card(p) {
+                const a = document.createElement('a');
+                a.className = 'vitrine-card';
+                a.href = p.link || '#';
+                a.target = '_blank';
+                a.rel = 'noopener sponsored';
+
+                const wrap = document.createElement('div');
+                wrap.className = 'vitrine-img';
+                const img = document.createElement('img');
+                img.src = p.imagem_url;
+                img.alt = p.nome;
+                img.loading = 'lazy';
+                wrap.appendChild(img);
+                if (p.loja) {
+                    const b = document.createElement('span');
+                    b.className = 'vitrine-loja';
+                    b.textContent = p.loja;
+                    wrap.appendChild(b);
+                }
+                a.appendChild(wrap);
+
+                const info = document.createElement('div');
+                info.className = 'vitrine-info';
+                const h = document.createElement('h3');
+                h.textContent = p.nome;
+                info.appendChild(h);
+                if (p.preco) {
+                    const pr = document.createElement('div');
+                    pr.className = 'vitrine-preco';
+                    pr.textContent = p.preco;
+                    info.appendChild(pr);
+                }
+                const btn = document.createElement('span');
+                btn.className = 'vitrine-btn';
+                btn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> Comprar';
+                info.appendChild(btn);
+                a.appendChild(info);
+                return a;
+            }
+
+            async function carregarProdutos() {
+                try {
+                    if (typeof supabase === 'undefined' || SUPABASE_URL.startsWith('COLE_AQUI')) return;
+                    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    const { data, error } = await sb
+                        .from('produtos')
+                        .select('nome, loja, preco, link, imagem_url')
+                        .eq('ativo', true)
+                        .order('ordem', { ascending: true })
+                        .order('created_at', { ascending: false });
+                    if (error) { console.error('Produtos:', error.message); return; }
+                    if (!data || !data.length) return;
+                    grid.innerHTML = '';
+                    data.forEach((p) => grid.appendChild(card(p)));
+                    secao.style.display = '';
+                    if (link) link.style.display = '';
+                } catch (e) {
+                    console.error('Produtos:', e);
+                }
+            }
+
+            carregarProdutos();
         })();
     </script>
 

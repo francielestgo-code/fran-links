@@ -212,6 +212,7 @@
         <div class="abas">
             <button type="button" class="aba ativa" data-aba="painelAnuncios"><i class="fa-solid fa-bullhorn"></i> Anúncios</button>
             <button type="button" class="aba" data-aba="painelVideos"><i class="fa-brands fa-youtube"></i> Vídeos</button>
+            <button type="button" class="aba" data-aba="painelProdutos"><i class="fa-solid fa-store"></i> Vitrine</button>
         </div>
 
         <div id="painelAnuncios">
@@ -271,6 +272,49 @@
             <div class="box">
                 <h2>Vídeos cadastrados</h2>
                 <div id="listaVideos"><p class="vazio">Carregando...</p></div>
+            </div>
+        </div>
+
+        <!-- ===== VITRINE DE PRODUTOS (afiliados) ===== -->
+        <div id="painelProdutos" class="hidden">
+            <div class="box">
+                <h2>Novo produto na vitrine</h2>
+                <form id="formProduto">
+                    <label for="prodArquivo">Foto do produto *</label>
+                    <input type="file" id="prodArquivo" accept="image/png, image/jpeg, image/webp, image/gif" required>
+                    <p class="hint">Print ou foto do produto (fundo branco fica ótimo). PNG, JPG, WEBP ou GIF até 5 MB.</p>
+                    <div class="preview" id="prodPreview">A pré-visualização aparece aqui</div>
+
+                    <label for="prodNome">Nome do produto *</label>
+                    <input type="text" id="prodNome" required maxlength="120" placeholder="Ex.: Perfume Essencial Deo Parfum 100ml">
+
+                    <label for="prodLoja">Loja *</label>
+                    <select id="prodLoja" required>
+                        <option value="">Selecione...</option>
+                        <option>Natura</option>
+                        <option>Avon</option>
+                        <option>Magalu</option>
+                        <option>Shopee</option>
+                        <option>Outra</option>
+                    </select>
+
+                    <label for="prodPreco">Preço (opcional)</label>
+                    <input type="text" id="prodPreco" maxlength="40" placeholder="Ex.: R$ 89,90">
+
+                    <label for="prodLink">Link de compra (seu link de afiliada) *</label>
+                    <input type="url" id="prodLink" required placeholder="https://...">
+
+                    <label for="prodOrdem">Ordem de exibição (menor aparece primeiro)</label>
+                    <input type="number" id="prodOrdem" value="0">
+
+                    <button type="submit" class="btn" id="btnProduto"><i class="fa-solid fa-cloud-arrow-up"></i> Publicar produto</button>
+                    <div id="msgProduto" class="msg"></div>
+                </form>
+            </div>
+
+            <div class="box">
+                <h2>Produtos da vitrine</h2>
+                <div id="listaProdutos"><p class="vazio">Carregando...</p></div>
             </div>
         </div>
     </section>
@@ -350,6 +394,7 @@
         $('telaPainel').classList.remove('hidden');
         carregarAnuncios();
         carregarVideos();
+        carregarProdutos();
     }
 
     sb.auth.getSession().then(({ data }) => atualizarTela(data.session));
@@ -568,11 +613,188 @@
         return item;
     }
 
+    // ================= VITRINE DE PRODUTOS =================
+    // Pré-visualização da foto do produto
+    $('prodArquivo').addEventListener('change', () => {
+        const arquivo = $('prodArquivo').files[0];
+        const preview = $('prodPreview');
+        preview.innerHTML = '';
+        if (!arquivo) { preview.textContent = 'A pré-visualização aparece aqui'; return; }
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(arquivo);
+        preview.appendChild(img);
+    });
+
+    // Publicar produto
+    $('formProduto').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const msg = $('msgProduto');
+        const arquivo = $('prodArquivo').files[0];
+        const nome = $('prodNome').value.trim();
+        const loja = $('prodLoja').value;
+        const link = $('prodLink').value.trim();
+
+        if (!arquivo) return mostrarMsg(msg, 'Escolha uma foto do produto.', 'erro');
+        if (!TIPOS_OK.includes(arquivo.type)) return mostrarMsg(msg, 'Formato não aceito. Use PNG, JPG, WEBP ou GIF.', 'erro');
+        if (arquivo.size > TAMANHO_MAX) return mostrarMsg(msg, 'A imagem passa de 5 MB. Diminua e tente de novo.', 'erro');
+        if (!nome) return mostrarMsg(msg, 'Digite o nome do produto.', 'erro');
+        if (!loja) return mostrarMsg(msg, 'Escolha a loja.', 'erro');
+        if (!/^https:\/\//i.test(link)) return mostrarMsg(msg, 'O link precisa começar com https://', 'erro');
+
+        $('btnProduto').disabled = true;
+        mostrarMsg(msg, 'Enviando foto...');
+
+        const EXT = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif' };
+        const caminho = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${EXT[arquivo.type]}`;
+
+        const { error: erroUpload } = await sb.storage
+            .from('produtos')
+            .upload(caminho, arquivo, { cacheControl: '31536000', contentType: arquivo.type });
+
+        if (erroUpload) {
+            $('btnProduto').disabled = false;
+            return mostrarMsg(msg, 'Erro ao enviar a foto: ' + erroUpload.message, 'erro');
+        }
+
+        const { data: urlData } = sb.storage.from('produtos').getPublicUrl(caminho);
+
+        const { error: erroInsert } = await sb.from('produtos').insert({
+            nome: nome,
+            loja: loja,
+            preco: $('prodPreco').value.trim() || null,
+            link: link,
+            ordem: parseInt($('prodOrdem').value, 10) || 0,
+            imagem_url: urlData.publicUrl,
+            imagem_path: caminho,
+            ativo: true
+        });
+
+        $('btnProduto').disabled = false;
+
+        if (erroInsert) {
+            await sb.storage.from('produtos').remove([caminho]);
+            return mostrarMsg(msg, 'Erro ao salvar o produto: ' + erroInsert.message, 'erro');
+        }
+
+        mostrarMsg(msg, 'Produto publicado! Já aparece na vitrine do site.', 'ok');
+        $('formProduto').reset();
+        $('prodPreview').textContent = 'A pré-visualização aparece aqui';
+        carregarProdutos();
+    });
+
+    async function carregarProdutos() {
+        const lista = $('listaProdutos');
+        const { data, error } = await sb
+            .from('produtos')
+            .select('*')
+            .order('ordem', { ascending: true })
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            lista.innerHTML = '';
+            const p = document.createElement('p');
+            p.className = 'vazio';
+            p.textContent = 'Erro ao carregar: ' + error.message;
+            lista.appendChild(p);
+            return;
+        }
+
+        lista.innerHTML = '';
+        if (!data.length) {
+            lista.innerHTML = '<p class="vazio">Nenhum produto ainda. Publique o primeiro acima!</p>';
+            return;
+        }
+        data.forEach((p) => lista.appendChild(criarItemProduto(p)));
+    }
+
+    function criarItemProduto(p) {
+        const item = document.createElement('div');
+        item.className = 'ad-item';
+
+        const img = document.createElement('img');
+        img.src = p.imagem_url;
+        img.alt = p.nome;
+        img.style.background = '#fff';
+        item.appendChild(img);
+
+        const info = document.createElement('div');
+        info.className = 'ad-info';
+
+        const h3 = document.createElement('h3');
+        h3.textContent = p.nome;
+        const badge = document.createElement('span');
+        badge.className = 'badge ' + (p.ativo ? 'on' : 'off');
+        badge.textContent = p.ativo ? 'NO AR' : 'PAUSADO';
+        badge.style.marginLeft = '8px';
+        h3.appendChild(badge);
+        info.appendChild(h3);
+
+        const meta = document.createElement('span');
+        meta.className = 'sem-link';
+        meta.textContent = [p.loja, p.preco].filter(Boolean).join(' · ') || 'Sem loja/preço';
+        info.appendChild(meta);
+
+        if (p.link) {
+            const a = document.createElement('a');
+            a.href = p.link; a.target = '_blank'; a.rel = 'noopener';
+            a.textContent = p.link;
+            info.appendChild(a);
+        }
+
+        const controles = document.createElement('div');
+        controles.className = 'ad-controls';
+
+        const btnAtivo = document.createElement('button');
+        btnAtivo.className = 'btn outline small';
+        btnAtivo.innerHTML = p.ativo ? '<i class="fa-solid fa-pause"></i> Pausar' : '<i class="fa-solid fa-play"></i> Ativar';
+        btnAtivo.onclick = async () => {
+            btnAtivo.disabled = true;
+            const { error } = await sb.from('produtos').update({ ativo: !p.ativo }).eq('id', p.id);
+            if (error) alert('Erro: ' + error.message);
+            carregarProdutos();
+        };
+        controles.appendChild(btnAtivo);
+
+        const lblOrdem = document.createElement('span');
+        lblOrdem.textContent = 'Ordem:';
+        const inpOrdem = document.createElement('input');
+        inpOrdem.type = 'number';
+        inpOrdem.value = p.ordem;
+        const btnOrdem = document.createElement('button');
+        btnOrdem.className = 'btn outline small';
+        btnOrdem.innerHTML = '<i class="fa-solid fa-floppy-disk"></i>';
+        btnOrdem.title = 'Salvar ordem';
+        btnOrdem.onclick = async () => {
+            btnOrdem.disabled = true;
+            const { error } = await sb.from('produtos').update({ ordem: parseInt(inpOrdem.value, 10) || 0 }).eq('id', p.id);
+            if (error) alert('Erro: ' + error.message);
+            carregarProdutos();
+        };
+        controles.append(lblOrdem, inpOrdem, btnOrdem);
+
+        const btnExcluir = document.createElement('button');
+        btnExcluir.className = 'btn danger small';
+        btnExcluir.innerHTML = '<i class="fa-solid fa-trash"></i> Excluir';
+        btnExcluir.onclick = async () => {
+            if (!confirm('Excluir este produto da vitrine? A foto também será apagada.')) return;
+            btnExcluir.disabled = true;
+            await sb.storage.from('produtos').remove([p.imagem_path]);
+            const { error } = await sb.from('produtos').delete().eq('id', p.id);
+            if (error) alert('Erro: ' + error.message);
+            carregarProdutos();
+        };
+        controles.appendChild(btnExcluir);
+
+        info.appendChild(controles);
+        item.appendChild(info);
+        return item;
+    }
+
     // ================= ABAS =================
     document.querySelectorAll('.aba').forEach((b) => {
         b.addEventListener('click', () => {
             document.querySelectorAll('.aba').forEach((x) => x.classList.toggle('ativa', x === b));
-            ['painelAnuncios', 'painelVideos'].forEach((id) => $(id).classList.toggle('hidden', id !== b.dataset.aba));
+            ['painelAnuncios', 'painelVideos', 'painelProdutos'].forEach((id) => $(id).classList.toggle('hidden', id !== b.dataset.aba));
         });
     });
 
