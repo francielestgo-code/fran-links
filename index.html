@@ -947,6 +947,15 @@
                 column-gap: 20px;
                 align-items: start;
             }
+            /* Serviços em 2 colunas: Apostilas+Auxílio | Design+Suporte */
+            .sec-servicos .servicos-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto;
+                grid-auto-flow: column;
+                gap: 20px;
+                align-items: start;
+            }
             .content > footer { text-align: center; }
 
             /* Vídeos: 3 por linha no computador */
@@ -1258,9 +1267,59 @@
 
         </section>
 
-        <!-- Seção: Serviços & Suporte -->
+        </div><!-- fim coluna esquerda -->
+        <div class="mid-col">
+
+        <!-- Seção: Minhas Lojas Parceiras (afiliados) -->
+        <section class="sec sec-afiliados" id="afiliados">
+        <div class="section-title">Minhas Lojas Parceiras</div>
+
+        <div class="card-container">
+            <img src="capa-loja-natura.jpg" alt="Espaço Digital Natura & Avon" class="card-thumb" onclick="openModal(this.src)">
+            <div class="card-info">
+                <h3>Espaço Digital Natura & Avon</h3>
+                <p>Compre com segurança direto da minha loja virtual.</p>
+                <div class="card-buttons">
+                    <a href="https://www.minhaloja.natura.com/consultoria/francielef1009" target="_blank" class="card-btn natura">
+                        <i class="fa-solid fa-store"></i> Acessar Loja Virtual
+                    </a>
+                    <a href="https://www.instagram.com/fran.beautycare" target="_blank" rel="noopener" class="card-btn instagram">
+                        <i class="fa-brands fa-instagram"></i> Instagram
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-container">
+            <a href="https://www.magazinevoce.com.br/magazinefranfreitas/" target="_blank" rel="noopener" aria-label="Abrir minha loja na Magalu"><img src="capa-magalu.jpg" alt="Minha loja Magalu com ofertas selecionadas" class="card-thumb"></a>
+            <div class="card-info">
+                <h3>Minha Loja Magalu</h3>
+                <p>Produtos que eu recomendo com preços da Magalu. Comprando pela minha loja você me ajuda e paga o mesmo valor! 💛</p>
+                <div class="card-buttons">
+                    <a href="https://www.magazinevoce.com.br/magazinefranfreitas/" target="_blank" rel="noopener" class="card-btn magalu">
+                        <i class="fa-solid fa-bag-shopping"></i> Ver ofertas na Magalu
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!--
+          COMO ADICIONAR MAIS LOJAS OU PRODUTOS (Shopee, Shein, Amazon...):
+          copie o bloco <div class="card-container">...</div> acima e troque:
+          - o link (href) pelo seu link de afiliado
+          - a imagem (src) pela foto do produto/loja
+          - o título <h3> e a descrição <p>
+        -->
+
+        </section>
+
+        </div><!-- fim coluna direita -->
+        </div><!-- fim mid-cols -->
+
+        <!-- Seção: Serviços & Suporte (largura total, 2 colunas) -->
         <section class="sec sec-servicos" id="servicos">
         <div class="section-title">Serviços & Suporte</div>
+        <div class="servicos-grid">
 
         <!-- Apostila personalizada (venda direta pelo WhatsApp) -->
         <div class="card-container destaque-apostila">
@@ -1315,56 +1374,8 @@
             </div>
         </div>
 
+        </div><!-- fim servicos-grid -->
         </section>
-
-        </div><!-- fim coluna esquerda -->
-        <div class="mid-col">
-
-        <!-- Seção: Minhas Lojas Parceiras (afiliados) -->
-        <section class="sec sec-afiliados" id="afiliados">
-        <div class="section-title">Minhas Lojas Parceiras</div>
-
-        <div class="card-container">
-            <img src="capa-loja-natura.jpg" alt="Espaço Digital Natura & Avon" class="card-thumb" onclick="openModal(this.src)">
-            <div class="card-info">
-                <h3>Espaço Digital Natura & Avon</h3>
-                <p>Compre com segurança direto da minha loja virtual.</p>
-                <div class="card-buttons">
-                    <a href="https://www.minhaloja.natura.com/consultoria/francielef1009" target="_blank" class="card-btn natura">
-                        <i class="fa-solid fa-store"></i> Acessar Loja Virtual
-                    </a>
-                    <a href="https://www.instagram.com/fran.beautycare" target="_blank" rel="noopener" class="card-btn instagram">
-                        <i class="fa-brands fa-instagram"></i> Instagram
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-container">
-            <a href="https://www.magazinevoce.com.br/magazinefranfreitas/" target="_blank" rel="noopener" aria-label="Abrir minha loja na Magalu"><img src="capa-magalu.jpg" alt="Minha loja Magalu com ofertas selecionadas" class="card-thumb"></a>
-            <div class="card-info">
-                <h3>Minha Loja Magalu</h3>
-                <p>Produtos que eu recomendo com preços da Magalu. Comprando pela minha loja você me ajuda e paga o mesmo valor! 💛</p>
-                <div class="card-buttons">
-                    <a href="https://www.magazinevoce.com.br/magazinefranfreitas/" target="_blank" rel="noopener" class="card-btn magalu">
-                        <i class="fa-solid fa-bag-shopping"></i> Ver ofertas na Magalu
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!--
-          COMO ADICIONAR MAIS LOJAS OU PRODUTOS (Shopee, Shein, Amazon...):
-          copie o bloco <div class="card-container">...</div> acima e troque:
-          - o link (href) pelo seu link de afiliado
-          - a imagem (src) pela foto do produto/loja
-          - o título <h3> e a descrição <p>
-        -->
-
-        </section>
-
-        </div><!-- fim coluna direita -->
-        </div><!-- fim mid-cols -->
 
         <!-- Seção: Vídeos em destaque (gerenciados pelo painel /admin.html) -->
         <section class="sec sec-videos" id="videos" style="display: none;">
