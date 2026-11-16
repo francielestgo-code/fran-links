@@ -441,6 +441,9 @@
         .card-btn.suporte {
             background: #0ea5e9;
         }
+        .card-btn.design {
+            background: #8b5cf6;
+        }
 
         /* Destaque sutil no card de apostilas */
         .destaque-apostila {
@@ -1287,6 +1290,19 @@
         </div>
 
         <div class="card-container">
+            <img src="capa-design.jpg" alt="Criação de design e vídeos para propaganda" class="card-thumb" onclick="openModal(this.src)">
+            <div class="card-info">
+                <h3>Design & Vídeos para Propaganda</h3>
+                <p>Crio e edito <strong>artes, posts e vídeos de propaganda</strong> no Canva e com Inteligência Artificial. Dê um visual profissional pro seu negócio!</p>
+                <div class="card-buttons">
+                    <button type="button" class="card-btn design" onclick="abrirDesign()">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Pedir um orçamento
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-container">
             <img src="capa-suporte.jpg" alt="Suporte Remoto de tecnologia" class="card-thumb" onclick="openModal(this.src)">
             <div class="card-info">
                 <h3>Suporte Remoto</h3>
@@ -1496,6 +1512,49 @@
         </div>
     </div>
 
+    <!-- Janela Modal: Design & Vídeos -->
+    <div id="designModal" class="form-modal">
+        <div class="about-content-box">
+            <button class="close-modal-btn" onclick="fecharDesign()">&times;</button>
+            <h2><i class="fa-solid fa-wand-magic-sparkles"></i> Design & Vídeos</h2>
+            <p style="font-size:0.88rem;">Criação e edição de artes, posts e vídeos de propaganda no Canva e com IA. Preencha o pedido e eu retorno pelo WhatsApp com um orçamento. 💜</p>
+
+            <div class="form-field">
+                <label for="dsNome">Nome completo *</label>
+                <input type="text" id="dsNome" placeholder="Seu nome">
+            </div>
+            <div class="form-field">
+                <label for="dsFone">WhatsApp (com DDD) *</label>
+                <input type="tel" id="dsFone" placeholder="(55) 99999-9999">
+            </div>
+            <div class="form-field">
+                <label>Tipo de serviço * <span style="color:#94a3b8;font-weight:400;">(pode marcar vários)</span></label>
+                <div class="tipo-opcoes" id="dsTipos">
+                    <button type="button" onclick="toggleTipoDesign(this,'Arte / Post para redes')">Arte / Post</button>
+                    <button type="button" onclick="toggleTipoDesign(this,'Logo / Identidade visual')">Logo</button>
+                    <button type="button" onclick="toggleTipoDesign(this,'Vídeo de propaganda')">Vídeo de propaganda</button>
+                    <button type="button" onclick="toggleTipoDesign(this,'Edição de vídeo')">Edição de vídeo</button>
+                    <button type="button" onclick="toggleTipoDesign(this,'Story / Reels')">Story / Reels</button>
+                    <button type="button" onclick="toggleTipoDesign(this,'Outro')">Outro</button>
+                </div>
+            </div>
+            <div class="form-field">
+                <label for="dsDetalhes">Descreva o que você precisa *</label>
+                <textarea id="dsDetalhes" rows="3" placeholder="Ex.: vídeo de 30s pra divulgar minha loja, com logo e preços..."></textarea>
+            </div>
+            <div class="form-field">
+                <label for="dsPrazo">Prazo (opcional)</label>
+                <input type="text" id="dsPrazo" placeholder="Ex.: preciso até sexta">
+            </div>
+
+            <p class="apostila-erro" id="dsErro">Preencha os campos obrigatórios (*) e marque pelo menos um tipo de serviço.</p>
+
+            <button type="button" class="btn-enviar-wpp" onclick="enviarDesign()">
+                <i class="fa-brands fa-whatsapp"></i> Enviar pedido no WhatsApp
+            </button>
+        </div>
+    </div>
+
     <!-- Script JavaScript -->
     <script>
         function openModal(imageSrc) {
@@ -1615,11 +1674,39 @@
             window.open(url, '_blank');
         }
 
+        // ===== DESIGN & VÍDEOS =====
+        const WHATS_DESIGN = '5555999158167';
+        let designTipos = [];
+        function abrirDesign() { document.getElementById('designModal').style.display = 'flex'; }
+        function fecharDesign() { document.getElementById('designModal').style.display = 'none'; }
+        function toggleTipoDesign(btn, tipo) {
+            const i = designTipos.indexOf(tipo);
+            if (i === -1) { designTipos.push(tipo); btn.classList.add('ativo'); }
+            else { designTipos.splice(i, 1); btn.classList.remove('ativo'); }
+        }
+        function enviarDesign() {
+            const nome = document.getElementById('dsNome').value.trim();
+            const fone = document.getElementById('dsFone').value.trim();
+            const detalhes = document.getElementById('dsDetalhes').value.trim();
+            const prazo = document.getElementById('dsPrazo').value.trim();
+            const erro = document.getElementById('dsErro');
+            if (!nome || !fone || !detalhes || designTipos.length === 0) { erro.style.display = 'block'; return; }
+            erro.style.display = 'none';
+            let msg = 'Olá, Fran! Quero um orçamento de design/vídeo 🎬\n\n';
+            msg += 'Nome: ' + nome + '\n';
+            msg += 'WhatsApp: ' + fone + '\n';
+            msg += 'Tipo de serviço: ' + designTipos.join(', ') + '\n';
+            msg += 'Descrição: ' + detalhes + '\n';
+            if (prazo) msg += 'Prazo: ' + prazo + '\n';
+            window.open('https://wa.me/' + WHATS_DESIGN + '?text=' + encodeURIComponent(msg), '_blank');
+        }
+
         // Links diretos que já abrem o formulário certo
         function checarHashApostila() {
             const h = location.hash;
             if (h === '#pedido-apostila' || h === '#apostila') abrirApostila();
             else if (h === '#auxilio-professor' || h === '#professores') abrirProfessor();
+            else if (h === '#design' || h === '#pedido-design') abrirDesign();
         }
         window.addEventListener('DOMContentLoaded', checarHashApostila);
         window.addEventListener('hashchange', checarHashApostila);
@@ -1648,7 +1735,7 @@
             const video = document.getElementById('welcomeVideo');
 
             // Se a pessoa veio por um link direto de pedido, não mostra o vídeo
-            const hashDireto = ['#pedido-apostila', '#apostila', '#auxilio-professor', '#professores'];
+            const hashDireto = ['#pedido-apostila', '#apostila', '#auxilio-professor', '#professores', '#design', '#pedido-design'];
             if (hashDireto.indexOf(location.hash) !== -1) return;
 
             let jaViu = false;
