@@ -435,6 +435,13 @@
         }
         .card-btn.apostila:hover { background: #15803d; }
 
+        .card-btn.professor {
+            background: #16a34a;
+        }
+        .card-btn.suporte {
+            background: #0ea5e9;
+        }
+
         /* Destaque sutil no card de apostilas */
         .destaque-apostila {
             border: 1px solid rgba(250, 204, 21, 0.45);
@@ -616,6 +623,34 @@
             margin-top: 6px;
         }
         .btn-enviar-wpp:hover { background: #1fb457; }
+
+        .form-field select {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 11px 13px;
+            color: #f1f5f9;
+            font-size: 0.92rem;
+            font-family: inherit;
+        }
+        .form-field select:focus { outline: none; border-color: #38bdf8; }
+        .tipo-opcoes { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tipo-opcoes button {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            border-radius: 20px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .tipo-opcoes button.ativo {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            color: #86efac;
+        }
 
         /* ===== VÍDEOS EM DESTAQUE ===== */
         .videos-grid {
@@ -950,6 +985,7 @@
             /* Cards das seções menores: um pouco mais compactos */
             .sec-afiliados .card-thumb,
             .sec-sistemas .card-thumb,
+            .sec-servicos .card-thumb,
             .sec-conteudo .card-thumb { width: 90px; height: 127px; }
         }
 
@@ -1064,6 +1100,7 @@
             <a href="#sistemas"><span>📊</span> Sistemas &amp; Utilidades</a>
             <a href="#conteudo"><span>▶️</span> Conteúdo &amp; Jogos</a>
             <a href="#afiliados"><span>🛍️</span> Minhas Lojas Parceiras</a>
+            <a href="#servicos"><span>👩‍🏫</span> Serviços &amp; Suporte</a>
             <a href="#videos" id="linkVideos" style="display: none;"><span>🎬</span> Vídeos em destaque</a>
             <a href="jogos.html"><span>🎮</span> Jogos Educativos da Fran</a>
         </nav>
@@ -1278,6 +1315,38 @@
 
         </section>
 
+        <!-- Seção: Serviços & Suporte -->
+        <section class="sec sec-servicos" id="servicos">
+        <div class="section-title">Serviços & Suporte</div>
+
+        <div class="card-container">
+            <img src="capa-professores.jpg" alt="Apoio ao professor: provas, apostilas e materiais" class="card-thumb" onclick="openModal(this.src)">
+            <div class="card-info">
+                <h3>Auxílio para Professores</h3>
+                <p>Ajudo professores do ensino fundamental e médio: montagem de <strong>provas, apostilas, listas de exercícios, slides e materiais</strong> sob medida.</p>
+                <div class="card-buttons">
+                    <button type="button" class="card-btn professor" onclick="abrirProfessor()">
+                        <i class="fa-solid fa-chalkboard-user"></i> Pedir um material
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-container">
+            <img src="capa-suporte.jpg" alt="Suporte Remoto de tecnologia" class="card-thumb" onclick="openModal(this.src)">
+            <div class="card-info">
+                <h3>Suporte Remoto</h3>
+                <p>Precisa de ajuda com o computador ou com tecnologia? Acesse meu suporte remoto.</p>
+                <div class="card-buttons">
+                    <a href="https://francielestgo-code.github.io/suporteremoto/" target="_blank" rel="noopener" class="card-btn suporte">
+                        <i class="fa-solid fa-headset"></i> Acessar Suporte
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        </section>
+
         </div><!-- fim coluna direita -->
         </div><!-- fim mid-cols -->
 
@@ -1369,6 +1438,63 @@
         </div>
     </div>
 
+    <!-- Janela Modal: Auxílio para Professores -->
+    <div id="professorModal" class="form-modal">
+        <div class="about-content-box">
+            <button class="close-modal-btn" onclick="fecharProfessor()">&times;</button>
+            <h2><i class="fa-solid fa-chalkboard-user"></i> Auxílio para Professores</h2>
+            <p style="font-size:0.88rem;">Ajudo professores do ensino fundamental e médio com provas, apostilas, listas de exercícios, slides e outros materiais. Preencha o pedido e eu retorno pelo WhatsApp com um orçamento. 💚</p>
+
+            <div class="form-field">
+                <label for="prNome">Nome completo *</label>
+                <input type="text" id="prNome" placeholder="Seu nome">
+            </div>
+            <div class="form-field">
+                <label for="prFone">WhatsApp (com DDD) *</label>
+                <input type="tel" id="prFone" placeholder="(55) 99999-9999">
+            </div>
+            <div class="form-field">
+                <label for="prNivel">Nível de ensino *</label>
+                <select id="prNivel">
+                    <option value="">Selecione...</option>
+                    <option>Ensino Fundamental (anos iniciais)</option>
+                    <option>Ensino Fundamental (anos finais)</option>
+                    <option>Ensino Médio</option>
+                    <option>Fundamental e Médio</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label for="prDisc">Disciplina / Matéria *</label>
+                <input type="text" id="prDisc" placeholder="Ex.: Matemática, Português, Ciências...">
+            </div>
+            <div class="form-field">
+                <label>Tipo de material * <span style="color:#94a3b8;font-weight:400;">(pode marcar vários)</span></label>
+                <div class="tipo-opcoes" id="prTipos">
+                    <button type="button" onclick="toggleTipo(this,'Prova')">Prova</button>
+                    <button type="button" onclick="toggleTipo(this,'Apostila')">Apostila</button>
+                    <button type="button" onclick="toggleTipo(this,'Lista de exercícios')">Lista de exercícios</button>
+                    <button type="button" onclick="toggleTipo(this,'Slides / Aula')">Slides / Aula</button>
+                    <button type="button" onclick="toggleTipo(this,'Plano de aula')">Plano de aula</button>
+                    <button type="button" onclick="toggleTipo(this,'Outro')">Outro</button>
+                </div>
+            </div>
+            <div class="form-field">
+                <label for="prDetalhes">Detalhes do pedido *</label>
+                <textarea id="prDetalhes" rows="3" placeholder="Conte o que você precisa: conteúdo, quantidade de questões, tema, etc."></textarea>
+            </div>
+            <div class="form-field">
+                <label for="prPrazo">Prazo (opcional)</label>
+                <input type="text" id="prPrazo" placeholder="Ex.: preciso até dia 25/11">
+            </div>
+
+            <p class="apostila-erro" id="prErro">Preencha os campos obrigatórios (*) e marque pelo menos um tipo de material.</p>
+
+            <button type="button" class="btn-enviar-wpp" onclick="enviarProfessor()">
+                <i class="fa-brands fa-whatsapp"></i> Enviar pedido no WhatsApp
+            </button>
+        </div>
+    </div>
+
     <!-- Script JavaScript -->
     <script>
         function openModal(imageSrc) {
@@ -1449,6 +1575,42 @@
             msg += '\nTotal: ' + apDisciplinas.length + ' disciplina(s) = R$ ' + total + ',00';
             if (obs) msg += '\n\nObservações: ' + obs;
             const url = 'https://wa.me/' + WHATS_APOSTILAS + '?text=' + encodeURIComponent(msg);
+            window.open(url, '_blank');
+        }
+
+        // ===== AUXÍLIO PARA PROFESSORES =====
+        const WHATS_PROFESSOR = '5555999158167';
+        let profTipos = [];
+
+        function abrirProfessor() { document.getElementById('professorModal').style.display = 'flex'; }
+        function fecharProfessor() { document.getElementById('professorModal').style.display = 'none'; }
+        function toggleTipo(btn, tipo) {
+            const i = profTipos.indexOf(tipo);
+            if (i === -1) { profTipos.push(tipo); btn.classList.add('ativo'); }
+            else { profTipos.splice(i, 1); btn.classList.remove('ativo'); }
+        }
+        function enviarProfessor() {
+            const nome = document.getElementById('prNome').value.trim();
+            const fone = document.getElementById('prFone').value.trim();
+            const nivel = document.getElementById('prNivel').value;
+            const disc = document.getElementById('prDisc').value.trim();
+            const detalhes = document.getElementById('prDetalhes').value.trim();
+            const prazo = document.getElementById('prPrazo').value.trim();
+            const erro = document.getElementById('prErro');
+            if (!nome || !fone || !nivel || !disc || !detalhes || profTipos.length === 0) {
+                erro.style.display = 'block';
+                return;
+            }
+            erro.style.display = 'none';
+            let msg = 'Olá, Fran! Sou professor(a) e gostaria de um material 👩‍🏫\n\n';
+            msg += 'Nome: ' + nome + '\n';
+            msg += 'WhatsApp: ' + fone + '\n';
+            msg += 'Nível de ensino: ' + nivel + '\n';
+            msg += 'Disciplina: ' + disc + '\n';
+            msg += 'Tipo de material: ' + profTipos.join(', ') + '\n';
+            msg += 'Detalhes: ' + detalhes + '\n';
+            if (prazo) msg += 'Prazo: ' + prazo + '\n';
+            const url = 'https://wa.me/' + WHATS_PROFESSOR + '?text=' + encodeURIComponent(msg);
             window.open(url, '_blank');
         }
 
