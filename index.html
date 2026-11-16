@@ -1615,9 +1615,11 @@
             window.open(url, '_blank');
         }
 
-        // Link direto: franfreitas.app.br/#pedido-apostila já abre o formulário
+        // Links diretos que já abrem o formulário certo
         function checarHashApostila() {
-            if (location.hash === '#pedido-apostila' || location.hash === '#apostila') abrirApostila();
+            const h = location.hash;
+            if (h === '#pedido-apostila' || h === '#apostila') abrirApostila();
+            else if (h === '#auxilio-professor' || h === '#professores') abrirProfessor();
         }
         window.addEventListener('DOMContentLoaded', checarHashApostila);
         window.addEventListener('hashchange', checarHashApostila);
@@ -1645,8 +1647,9 @@
             if (!overlay) return;
             const video = document.getElementById('welcomeVideo');
 
-            // Se a pessoa veio pelo link direto do pedido, não mostra o vídeo
-            if (location.hash === '#pedido-apostila' || location.hash === '#apostila') return;
+            // Se a pessoa veio por um link direto de pedido, não mostra o vídeo
+            const hashDireto = ['#pedido-apostila', '#apostila', '#auxilio-professor', '#professores'];
+            if (hashDireto.indexOf(location.hash) !== -1) return;
 
             let jaViu = false;
             try { jaViu = localStorage.getItem('franwelcome_v1') === 'sim'; } catch (e) {}
