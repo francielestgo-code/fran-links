@@ -1069,6 +1069,39 @@
             .sec-conteudo .card-thumb { width: 90px; height: 127px; }
         }
 
+        /* ===== CELULAR: menu de categorias (toca e mostra só aquela seção) ===== */
+        @media (max-width: 999px) {
+            .side-index {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                width: 100%;
+                max-width: 440px;
+                margin: 22px auto 4px;
+            }
+            .side-index a {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 14px 16px;
+                border-radius: 12px;
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.07);
+                color: #e2e8f0;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 1rem;
+                transition: background 0.15s, border-color 0.15s;
+            }
+            .side-index a span { font-size: 1.3rem; line-height: 1; }
+            .side-index a.ativo {
+                background: rgba(56, 189, 248, 0.16);
+                border-color: #38bdf8;
+                color: #ffffff;
+            }
+            .mob-oculto { display: none !important; }
+        }
+
         /* Celulares */
         @media (max-width: 480px) {
             .ads-arrow { display: none !important; }
@@ -2159,6 +2192,55 @@
             }
 
             carregarProdutos();
+        })();
+
+        // ===== CELULAR: menu que mostra só a categoria escolhida =====
+        (function () {
+            const IDS = ['livros', 'sistemas', 'conteudo', 'afiliados', 'vitrine', 'servicos', 'videos'];
+            const mq = window.matchMedia('(max-width: 999px)');
+            const menuLinks = Array.prototype.filter.call(
+                document.querySelectorAll('.side-index a'),
+                (a) => { const h = a.getAttribute('href'); return h && h.charAt(0) === '#' && h.length > 1; }
+            );
+
+            function selecionar(id, rolar) {
+                IDS.forEach((s) => {
+                    const el = document.getElementById(s);
+                    if (el) el.classList.toggle('mob-oculto', s !== id);
+                });
+                menuLinks.forEach((a) => a.classList.toggle('ativo', a.getAttribute('href') === '#' + id));
+                if (rolar) {
+                    const el = document.getElementById(id);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+
+            function limpar() {
+                IDS.forEach((s) => { const el = document.getElementById(s); if (el) el.classList.remove('mob-oculto'); });
+                menuLinks.forEach((a) => a.classList.remove('ativo'));
+            }
+
+            function aplicar() {
+                if (mq.matches) {
+                    const atual = document.querySelector('.side-index a.ativo');
+                    const id = atual ? atual.getAttribute('href').slice(1) : 'livros';
+                    selecionar(id, false);
+                } else {
+                    limpar();
+                }
+            }
+
+            menuLinks.forEach((a) => {
+                a.addEventListener('click', (e) => {
+                    if (!mq.matches) return; // computador: rola normalmente
+                    e.preventDefault();
+                    selecionar(a.getAttribute('href').slice(1), true);
+                });
+            });
+
+            if (mq.addEventListener) mq.addEventListener('change', aplicar);
+            else if (mq.addListener) mq.addListener(aplicar);
+            aplicar();
         })();
     </script>
 
