@@ -1216,7 +1216,6 @@
             <a href="#vitrine" id="linkVitrine" style="display: none;"><span>🛒</span> Meus Favoritos</a>
             <a href="#servicos"><span>👩‍🏫</span> Serviços &amp; Suporte</a>
             <a href="#videos" id="linkVideos" style="display: none;"><span>🎬</span> Vídeos em destaque</a>
-            <a href="jogos.html"><span>🎮</span> Jogos Educativos da Fran</a>
         </nav>
         </aside>
 
@@ -2186,6 +2185,7 @@
                     data.forEach((p) => grid.appendChild(card(p)));
                     secao.style.display = '';
                     if (link) link.style.display = '';
+                    if (window.__atualizarPadraoMobile) window.__atualizarPadraoMobile();
                 } catch (e) {
                     console.error('Produtos:', e);
                 }
@@ -2202,6 +2202,14 @@
                 document.querySelectorAll('.side-index a'),
                 (a) => { const h = a.getAttribute('href'); return h && h.charAt(0) === '#' && h.length > 1; }
             );
+            let userClicou = false;
+
+            // Categoria mostrada por padrão: Meus Favoritos (se tiver produtos), senão Livros
+            function padrao() {
+                const lv = document.getElementById('linkVitrine');
+                const temFavoritos = lv && getComputedStyle(lv).display !== 'none';
+                return temFavoritos ? 'vitrine' : 'livros';
+            }
 
             function selecionar(id, rolar) {
                 IDS.forEach((s) => {
@@ -2223,17 +2231,23 @@
             function aplicar() {
                 if (mq.matches) {
                     const atual = document.querySelector('.side-index a.ativo');
-                    const id = atual ? atual.getAttribute('href').slice(1) : 'livros';
+                    const id = atual ? atual.getAttribute('href').slice(1) : padrao();
                     selecionar(id, false);
                 } else {
                     limpar();
                 }
             }
 
+            // Chamada quando a vitrine carrega: se a pessoa ainda não clicou, mostra os Favoritos
+            window.__atualizarPadraoMobile = function () {
+                if (mq.matches && !userClicou) selecionar(padrao(), false);
+            };
+
             menuLinks.forEach((a) => {
                 a.addEventListener('click', (e) => {
                     if (!mq.matches) return; // computador: rola normalmente
                     e.preventDefault();
+                    userClicou = true;
                     selecionar(a.getAttribute('href').slice(1), true);
                 });
             });
