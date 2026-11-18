@@ -501,7 +501,9 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+        .vitrine-preco-de { font-size: 0.82rem; color: #94a3b8; text-decoration: line-through; line-height: 1.1; }
         .vitrine-preco { font-size: 1.05rem; font-weight: 700; color: #4ade80; }
+        .vitrine-parcelas { font-size: 0.78rem; color: #cbd5e1; margin-top: 2px; line-height: 1.25; }
         .vitrine-btn {
             margin-top: auto;
             background: #38bdf8;
@@ -2155,11 +2157,23 @@
                 const h = document.createElement('h3');
                 h.textContent = p.nome;
                 info.appendChild(h);
+                if (p.preco_de) {
+                    const de = document.createElement('div');
+                    de.className = 'vitrine-preco-de';
+                    de.textContent = p.preco_de;
+                    info.appendChild(de);
+                }
                 if (p.preco) {
                     const pr = document.createElement('div');
                     pr.className = 'vitrine-preco';
                     pr.textContent = p.preco;
                     info.appendChild(pr);
+                }
+                if (p.parcelas) {
+                    const pc = document.createElement('div');
+                    pc.className = 'vitrine-parcelas';
+                    pc.textContent = p.parcelas;
+                    info.appendChild(pc);
                 }
                 const btn = document.createElement('span');
                 btn.className = 'vitrine-btn';
@@ -2175,7 +2189,7 @@
                     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                     const { data, error } = await sb
                         .from('produtos')
-                        .select('nome, loja, preco, link, imagem_url')
+                        .select('nome, loja, preco_de, preco, parcelas, link, imagem_url')
                         .eq('ativo', true)
                         .order('ordem', { ascending: true })
                         .order('created_at', { ascending: false });

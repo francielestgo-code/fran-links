@@ -299,8 +299,14 @@
                         <option>Outra</option>
                     </select>
 
-                    <label for="prodPreco">Preço (opcional)</label>
-                    <input type="text" id="prodPreco" maxlength="40" placeholder="Ex.: R$ 89,90">
+                    <label for="prodPrecoDe">Preço "De" — riscado (opcional)</label>
+                    <input type="text" id="prodPrecoDe" maxlength="40" placeholder="Ex.: R$ 4.999,00">
+
+                    <label for="prodPreco">Preço principal (opcional)</label>
+                    <input type="text" id="prodPreco" maxlength="40" placeholder="Ex.: R$ 2.374,05">
+
+                    <label for="prodParcelas">Parcelas / Pix (opcional)</label>
+                    <input type="text" id="prodParcelas" maxlength="80" placeholder="Ex.: 10x de R$ 249,90 sem juros">
 
                     <label for="prodLink">Link de compra (seu link de afiliada) *</label>
                     <input type="url" id="prodLink" required placeholder="https://...">
@@ -662,7 +668,9 @@
         const { error: erroInsert } = await sb.from('produtos').insert({
             nome: nome,
             loja: loja,
+            preco_de: $('prodPrecoDe').value.trim() || null,
             preco: $('prodPreco').value.trim() || null,
+            parcelas: $('prodParcelas').value.trim() || null,
             link: link,
             ordem: parseInt($('prodOrdem').value, 10) || 0,
             imagem_url: urlData.publicUrl,
@@ -732,7 +740,8 @@
 
         const meta = document.createElement('span');
         meta.className = 'sem-link';
-        meta.textContent = [p.loja, p.preco].filter(Boolean).join(' · ') || 'Sem loja/preço';
+        const precoTxt = [p.preco_de ? 'De ' + p.preco_de : null, p.preco].filter(Boolean).join(' → ');
+        meta.textContent = [p.loja, precoTxt, p.parcelas].filter(Boolean).join(' · ') || 'Sem loja/preço';
         info.appendChild(meta);
 
         if (p.link) {
@@ -784,10 +793,20 @@
             edLoja.appendChild(o);
         });
 
+        const edPrecoDe = document.createElement('input');
+        edPrecoDe.type = 'text';
+        edPrecoDe.value = p.preco_de || '';
+        edPrecoDe.placeholder = 'Ex: R$ 4.999,00';
+
         const edPreco = document.createElement('input');
         edPreco.type = 'text';
         edPreco.value = p.preco || '';
-        edPreco.placeholder = 'Ex: R$ 31,56';
+        edPreco.placeholder = 'Ex: R$ 2.374,05';
+
+        const edParcelas = document.createElement('input');
+        edParcelas.type = 'text';
+        edParcelas.value = p.parcelas || '';
+        edParcelas.placeholder = 'Ex: 10x de R$ 249,90 sem juros';
 
         const edLink = document.createElement('input');
         edLink.type = 'url';
@@ -797,7 +816,9 @@
         editBox.append(
             campoEdit('Nome do produto', edNome),
             campoEdit('Loja', edLoja),
-            campoEdit('Preço', edPreco),
+            campoEdit('Preço "De" (riscado)', edPrecoDe),
+            campoEdit('Preço principal', edPreco),
+            campoEdit('Parcelas / Pix', edParcelas),
             campoEdit('Link do produto', edLink)
         );
 
@@ -828,7 +849,9 @@
             const { error } = await sb.from('produtos').update({
                 nome: nome,
                 loja: edLoja.value || null,
+                preco_de: edPrecoDe.value.trim() || null,
                 preco: edPreco.value.trim() || null,
+                parcelas: edParcelas.value.trim() || null,
                 link: link || null
             }).eq('id', p.id);
             if (error) { btnSalvarEdit.disabled = false; alert('Erro: ' + error.message); return; }
