@@ -123,12 +123,39 @@
 
         .nowrap { white-space: nowrap; }
 
-        .tagline {
-            font-size: 0.85rem;
-            font-weight: 600;
+        .tagline-main {
+            font-size: 0.98rem;
+            font-weight: 700;
             color: #38bdf8;
-            margin-bottom: 6px;
+            margin: 0 0 3px;
             letter-spacing: 0.3px;
+            line-height: 1.4;
+        }
+        .tagline-sub {
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: #7dd3fc;
+            margin: 0 0 16px;
+            letter-spacing: 0.2px;
+            line-height: 1.4;
+        }
+        .bio-chips {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .chip {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #e2e8f0;
+            background: rgba(56, 189, 248, 0.10);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 999px;
+            padding: 6px 13px;
+            line-height: 1.2;
+            white-space: nowrap;
         }
 
         /* Ícones das redes sociais */
@@ -979,8 +1006,9 @@
             .profile-container { gap: 14px; margin-bottom: 18px; }
             .profile-img { width: 110px; height: 110px; }
             h1 { font-size: 1.8rem; margin-bottom: 8px; }
-            .tagline { font-size: 0.88rem; line-height: 1.6; margin-bottom: 10px; }
-            .bio { font-size: 0.88rem; line-height: 1.5; }
+            .tagline-main { font-size: 0.95rem; }
+            .tagline-sub { font-size: 0.82rem; margin-bottom: 14px; }
+            .chip { font-size: 0.78rem; padding: 6px 11px; }
             .social-links { margin: 18px 0 20px; }
             .top-buttons { margin-bottom: 0; }
 
@@ -1163,8 +1191,16 @@
         </div>
 
         <h1>Fran Freitas</h1>
-        <p class="tagline"><span class="nowrap">Analista de Sistemas</span> • <span class="nowrap">Cientista da Computação</span> • <span class="nowrap">Técnica em Informática</span> • <span class="nowrap">Autora e Consultora de Beleza</span></p>
-        <p class="bio">📚 Apostilas de concurso e materiais para professores · 🎨 Design e vídeos · 🎮 Jogos educativos · 📊 Painel Financeiro · 🎧 Suporte · 🛍️ Ofertas Natura, Avon e lojas parceiras</p>
+        <p class="tagline-main"><span class="nowrap">Analista de Sistemas</span> &amp; <span class="nowrap">Cientista da Computação</span></p>
+        <p class="tagline-sub"><span class="nowrap">Técnica em Informática</span> · <span class="nowrap">Autora</span> · <span class="nowrap">Consultora de Beleza</span></p>
+        <div class="bio-chips">
+            <span class="chip">📚 Apostilas</span>
+            <span class="chip">🎨 Design &amp; Vídeos</span>
+            <span class="chip">🎮 Jogos</span>
+            <span class="chip">📊 Painel Financeiro</span>
+            <span class="chip">🎧 Suporte</span>
+            <span class="chip">🛍️ Lojas parceiras</span>
+        </div>
 
         <!-- Ícones das redes sociais -->
         <div class="social-links">
