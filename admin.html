@@ -756,6 +756,86 @@
         };
         controles.appendChild(btnAtivo);
 
+        // ----- Botão Editar + formulário embutido -----
+        const editBox = document.createElement('div');
+        editBox.style.cssText = 'display:none; width:100%; margin-top:10px; padding-top:10px; border-top:1px solid #243247;';
+
+        function campoEdit(rotulo, campo) {
+            const wrap = document.createElement('div');
+            wrap.style.marginBottom = '8px';
+            const lab = document.createElement('label');
+            lab.textContent = rotulo;
+            lab.style.cssText = 'display:block; font-size:0.78rem; color:#94a3b8; margin-bottom:3px;';
+            campo.style.cssText = 'width:100%; background:#0f172a; border:1px solid #334155; border-radius:8px; padding:8px 10px; color:#f1f5f9; font-size:0.9rem; box-sizing:border-box;';
+            wrap.append(lab, campo);
+            return wrap;
+        }
+
+        const edNome = document.createElement('input');
+        edNome.type = 'text';
+        edNome.value = p.nome || '';
+
+        const edLoja = document.createElement('select');
+        ['', 'Natura', 'Avon', 'Magalu', 'Shopee', 'Mercado Livre', 'Outra'].forEach((op) => {
+            const o = document.createElement('option');
+            o.value = op;
+            o.textContent = op || 'Selecione a loja...';
+            if (op === (p.loja || '')) o.selected = true;
+            edLoja.appendChild(o);
+        });
+
+        const edPreco = document.createElement('input');
+        edPreco.type = 'text';
+        edPreco.value = p.preco || '';
+        edPreco.placeholder = 'Ex: R$ 31,56';
+
+        const edLink = document.createElement('input');
+        edLink.type = 'url';
+        edLink.value = p.link || '';
+        edLink.placeholder = 'https://...';
+
+        editBox.append(
+            campoEdit('Nome do produto', edNome),
+            campoEdit('Loja', edLoja),
+            campoEdit('Preço', edPreco),
+            campoEdit('Link do produto', edLink)
+        );
+
+        const edBtns = document.createElement('div');
+        edBtns.style.cssText = 'display:flex; gap:8px; flex-wrap:wrap;';
+        const btnSalvarEdit = document.createElement('button');
+        btnSalvarEdit.className = 'btn small';
+        btnSalvarEdit.innerHTML = '<i class="fa-solid fa-check"></i> Salvar alterações';
+        const btnCancelarEdit = document.createElement('button');
+        btnCancelarEdit.className = 'btn outline small';
+        btnCancelarEdit.textContent = 'Cancelar';
+        edBtns.append(btnSalvarEdit, btnCancelarEdit);
+        editBox.appendChild(edBtns);
+
+        const btnEditar = document.createElement('button');
+        btnEditar.className = 'btn outline small';
+        btnEditar.innerHTML = '<i class="fa-solid fa-pen"></i> Editar';
+        btnEditar.onclick = () => {
+            editBox.style.display = editBox.style.display === 'none' ? 'block' : 'none';
+        };
+        btnCancelarEdit.onclick = () => { editBox.style.display = 'none'; };
+        btnSalvarEdit.onclick = async () => {
+            const nome = edNome.value.trim();
+            const link = edLink.value.trim();
+            if (!nome) { alert('Digite o nome do produto.'); return; }
+            if (link && !/^https?:\/\//i.test(link)) { alert('O link precisa começar com https://'); return; }
+            btnSalvarEdit.disabled = true;
+            const { error } = await sb.from('produtos').update({
+                nome: nome,
+                loja: edLoja.value || null,
+                preco: edPreco.value.trim() || null,
+                link: link || null
+            }).eq('id', p.id);
+            if (error) { btnSalvarEdit.disabled = false; alert('Erro: ' + error.message); return; }
+            carregarProdutos();
+        };
+        controles.appendChild(btnEditar);
+
         const lblOrdem = document.createElement('span');
         lblOrdem.textContent = 'Ordem:';
         const inpOrdem = document.createElement('input');
@@ -787,6 +867,7 @@
         controles.appendChild(btnExcluir);
 
         info.appendChild(controles);
+        info.appendChild(editBox);
         item.appendChild(info);
         return item;
     }
