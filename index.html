@@ -37,7 +37,21 @@
             font-family: 'Inter', sans-serif;
         }
 
-        html { background: #0f172a; }
+        html {
+            background: #0f172a;
+            overflow-y: scroll;                 /* barra de rolagem sempre visível */
+            scrollbar-width: thin;              /* Firefox */
+            scrollbar-color: #38bdf8 #0f172a;   /* Firefox: alça e trilho */
+        }
+        /* Barra de rolagem estilizada (Chrome, Edge, Safari) */
+        html::-webkit-scrollbar { width: 12px; }
+        html::-webkit-scrollbar-track { background: #0f172a; }
+        html::-webkit-scrollbar-thumb {
+            background: #38bdf8;
+            border-radius: 10px;
+            border: 3px solid #0f172a;
+        }
+        html::-webkit-scrollbar-thumb:hover { background: #0ea5e9; }
 
         body {
             position: relative;
@@ -47,7 +61,7 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             padding: 20px;
         }
 
